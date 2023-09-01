@@ -7,7 +7,7 @@ services:
     volumes:
       - /var/lib/postgresql/data/
     ports:
-      - "6541:5433"
+      - "6541:5432"
     restart: on-failure
     environment:
       - POSTGRES_DB=ewm_main
@@ -27,7 +27,7 @@ services:
       - POSTGRES_USER=server_user
       - POSTGRES_PASSWORD=qwerty
       - DB_HOST=ewm-main-db
-      - DB_PORT=5433
+      - DB_PORT=5432
 
   ewm-stats-db:
     image: postgres:14-alpine
@@ -35,7 +35,7 @@ services:
     volumes:
       - /var/lib/postgresql/data/
     ports:
-      - "6542:5434"
+      - "6542:5432"
     restart: on-failure
     environment:
       - POSTGRES_DB=ewm_stats
@@ -55,4 +55,4 @@ services:
       - POSTGRES_USER=stats_user
       - POSTGRES_PASSWORD=qwerty
       - DB_HOST=ewm-stats-db
-      - DB_PORT=5434
+      - DB_PORT=5432
