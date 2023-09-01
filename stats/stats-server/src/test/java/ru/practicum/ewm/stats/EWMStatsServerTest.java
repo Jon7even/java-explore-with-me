@@ -9,6 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 class EWMStatsServerTest {
 
     @Test
+    void contextLoads() {
+    }
+
+    @Test
     void testMain() {
         Assertions.assertDoesNotThrow(EWMStatsServerApp::new);
     }

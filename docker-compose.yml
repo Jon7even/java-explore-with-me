@@ -1,15 +1,57 @@
-version: '3.1'
+version: '3.8'
 services:
-  stats-server:
-    ports:
-      - "9090:9090"
-
-  stats-db:
-    image: postgres:14-alpine
-
-  ewm-service:
+  main-service:
+    build: main-service/
+    container_name: main_server
     ports:
       - "8080:8080"
+    restart: on-failure
+    depends_on:
+      - ewm-main-db
+    environment:
+      - DB_NAME=ewm_main
+      - POSTGRES_USER=server_user
+      - POSTGRES_PASSWORD=qwerty
+      - DB_HOST=db
+      - DB_PORT=5432
 
-  ewm-db:
+  ewm-main-db:
     image: postgres:14-alpine
+    container_name: ewm_main_db
+    volumes:
+      - /var/lib/postgresql/data/
+    ports:
+      - "6542:5432"
+    restart: on-failure
+    environment:
+      - POSTGRES_DB=ewm_main
+      - POSTGRES_USER=server_user
+      - POSTGRES_PASSWORD=qwerty
+
+  stats-server:
+    build: stats/stats-server
+    container_name: stats_server
+    ports:
+      - "9090:9090"
+    restart: on-failure
+    depends_on:
+      - ewm-stats-db
+    environment:
+      - DB_NAME=ewm_stats
+      - POSTGRES_USER=stats_user
+      - POSTGRES_PASSWORD=qwerty
+      - DB_HOST=db
+      - DB_PORT=5432
+
+  ewm-stats-db:
+    image: postgres:14-alpine
+    container_name: ewm_stats_db
+    volumes:
+      - /var/lib/postgresql/data/
+    ports:
+      - "6541:5432"
+    restart: on-failure
+    environment:
+      - POSTGRES_DB=ewm_stats
+      - POSTGRES_USER=stats_user
+      - POSTGRES_PASSWORD=qwerty
