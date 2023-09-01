@@ -13,7 +13,7 @@ public interface StatRepository extends JpaRepository<HitEntity, Long> {
             " FROM HitEntity AS ht " +
             "WHERE ht.timestamp BETWEEN ?1 AND ?2 " +
             "GROUP BY ht.app, ht.uri " +
-            "ORDER BY COUNT(DISTINCT ht.ip) " +
+            "ORDER BY COUNT(ht.ip) " +
             " DESC")
     List<HitTO> findAllStatsByStartTimeAndEndTime(LocalDateTime start, LocalDateTime end);
 
@@ -22,7 +22,7 @@ public interface StatRepository extends JpaRepository<HitEntity, Long> {
             "WHERE ht.timestamp BETWEEN ?1 AND ?2 " +
             "  AND ht.uri IN ?3 " +
             "GROUP BY ht.app, ht.uri " +
-            "ORDER BY COUNT(DISTINCT ht.ip) " +
+            "ORDER BY COUNT(ht.ip) " +
             " DESC")
     List<HitTO> findAllStatsByUriAndStartTimeAndEndTime(LocalDateTime start, LocalDateTime end, List<String> uri);
 
