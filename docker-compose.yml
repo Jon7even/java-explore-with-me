@@ -1,5 +1,19 @@
 version: '3.8'
 services:
+
+  ewm-main-db:
+    image: postgres:14-alpine
+    container_name: ewm_main_db
+    volumes:
+      - /var/lib/postgresql/data/data_main
+    ports:
+      - "6541:5433"
+    restart: on-failure
+    environment:
+      - POSTGRES_DB=ewm_main
+      - POSTGRES_USER=server_user
+      - POSTGRES_PASSWORD=qwerty
+
   main-service:
     build: main-service/
     container_name: main_server
@@ -12,20 +26,20 @@ services:
       - DB_NAME=ewm_main
       - POSTGRES_USER=server_user
       - POSTGRES_PASSWORD=qwerty
-      - DB_HOST=db
-      - DB_PORT=5432
+      - DB_HOST=ewm-main-db
+      - DB_PORT=5433
 
-  ewm-main-db:
+  ewm-stats-db:
     image: postgres:14-alpine
-    container_name: ewm_main_db
+    container_name: ewm_stats_db
     volumes:
-      - /var/lib/postgresql/data/
+      - /var/lib/postgresql/data/data_stats
     ports:
-      - "6542:5432"
+      - "6542:5433"
     restart: on-failure
     environment:
-      - POSTGRES_DB=ewm_main
-      - POSTGRES_USER=server_user
+      - POSTGRES_DB=ewm_stats
+      - POSTGRES_USER=stats_user
       - POSTGRES_PASSWORD=qwerty
 
   stats-server:
@@ -40,18 +54,5 @@ services:
       - DB_NAME=ewm_stats
       - POSTGRES_USER=stats_user
       - POSTGRES_PASSWORD=qwerty
-      - DB_HOST=db
-      - DB_PORT=5432
-
-  ewm-stats-db:
-    image: postgres:14-alpine
-    container_name: ewm_stats_db
-    volumes:
-      - /var/lib/postgresql/data/
-    ports:
-      - "6541:5432"
-    restart: on-failure
-    environment:
-      - POSTGRES_DB=ewm_stats
-      - POSTGRES_USER=stats_user
-      - POSTGRES_PASSWORD=qwerty
+      - DB_HOST=ewm-stats-db
+      - DB_PORT=5433
