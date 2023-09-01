@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class EWMStatsServerTest {
-
     @Test
     void contextLoads() {
     }

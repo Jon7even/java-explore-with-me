@@ -6,6 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class EWMMainServiceTest {
+    @Test
+    void contextLoads() {
+    }
 
     @Test
     void testMainService() {

@@ -5,7 +5,7 @@ services:
     image: postgres:14-alpine
     container_name: ewm_main_db
     volumes:
-      - /var/lib/postgresql/data/data_main
+      - /var/lib/postgresql/data/
     ports:
       - "6541:5433"
     restart: on-failure
@@ -33,9 +33,9 @@ services:
     image: postgres:14-alpine
     container_name: ewm_stats_db
     volumes:
-      - /var/lib/postgresql/data/data_stats
+      - /var/lib/postgresql/data/
     ports:
-      - "6542:5433"
+      - "6542:5434"
     restart: on-failure
     environment:
       - POSTGRES_DB=ewm_stats
@@ -55,4 +55,4 @@ services:
       - POSTGRES_USER=stats_user
       - POSTGRES_PASSWORD=qwerty
       - DB_HOST=ewm-stats-db
-      - DB_PORT=5433
+      - DB_PORT=5434
