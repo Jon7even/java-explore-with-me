@@ -31,7 +31,7 @@ public class StatClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getStats(RequestStatListTO requestStatListTO) {
-        if (requestStatListTO.getUris() == null || requestStatListTO.getUris().isEmpty()) {
+        if (requestStatListTO.getUris().isEmpty()) {
             Map<String, Object> parameters = Map.of(
                     "start", requestStatListTO.getStart().format(DEFAULT_TIME_FORMAT),
                     "end", requestStatListTO.getEnd().format(DEFAULT_TIME_FORMAT),
