@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +23,7 @@ public class RequestStatListTO {
     @JsonFormat(pattern = DATE_TIME_HIT)
     private LocalDateTime end;
 
+    @Nullable
     private List<String> uris;
 
     private boolean unique;

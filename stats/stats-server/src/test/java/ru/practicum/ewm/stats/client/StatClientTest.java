@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@AutoConfigureTestDatabase
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -69,8 +71,8 @@ public class StatClientTest extends GenericTests {
         String original = "[{\"app\":\"ewm-test-2\",\"uri\":\"test/test/test/2\",\"hits\":1}]";
 
         RequestStatListTO requestStatList = RequestStatListTO.builder()
-                .start(start.minusYears(1))
-                .end(end.plusYears(1))
+                .start(start.minusHours(1))
+                .end(end.plusHours(1))
                 .uris(List.of(hitSecond.getUri()))
                 .unique(false)
                 .build();
@@ -86,8 +88,8 @@ public class StatClientTest extends GenericTests {
         String original = "[]";
 
         RequestStatListTO requestStatList = RequestStatListTO.builder()
-                .start(start.minusYears(1))
-                .end(end.plusYears(1))
+                .start(start.minusHours(1))
+                .end(end.plusHours(1))
                 .uris(uris)
                 .unique(true)
                 .build();
