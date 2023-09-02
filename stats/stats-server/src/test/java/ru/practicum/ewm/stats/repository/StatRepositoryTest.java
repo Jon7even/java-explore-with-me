@@ -7,12 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.practicum.ewm.stats.dto.HitCreateTO;
 import ru.practicum.ewm.stats.mapper.StatMapper;
 import ru.practicum.ewm.stats.model.HitEntity;
 import ru.practicum.ewm.stats.projections.HitTO;
+import ru.practicum.ewm.stats.setup.GenericTests;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,33 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class StatRepositoryTest {
+public class StatRepositoryTest extends GenericTests {
     @Autowired
     private StatRepository repository;
-
-    private HitCreateTO hitOne;
-
-    private HitCreateTO hitSecond;
 
     private HitEntity hitInDbOne;
 
     private HitEntity hitInDbSecond;
-
-    private void initHitDTO() {
-        hitOne = HitCreateTO.builder()
-                .app("ewm-test-1")
-                .uri("test/test/test/1")
-                .ip("11.11.11.11")
-                .timestamp(LocalDateTime.now())
-                .build();
-
-        hitSecond = HitCreateTO.builder()
-                .app("ewm-test-2")
-                .uri("test/test/test/2")
-                .ip("22.22.22.22")
-                .timestamp(LocalDateTime.now().plusHours(1))
-                .build();
-    }
 
     @BeforeEach
     void setUp() {

@@ -16,7 +16,9 @@ import static ru.practicum.ewm.stats.dto.constants.Constants.DATE_TIME_HIT;
 @NoArgsConstructor
 public class HitCreateTO {
     private String app;
+
     private String uri;
+
     private String ip;
 
     @JsonFormat(pattern = DATE_TIME_HIT)

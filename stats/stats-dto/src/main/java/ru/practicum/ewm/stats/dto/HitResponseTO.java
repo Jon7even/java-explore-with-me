@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HitResponseTO {
     private String app;
+
     private String uri;
+
     private Long hits;
 }

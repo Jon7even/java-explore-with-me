@@ -3,27 +3,21 @@ package ru.practicum.ewm.stats.converter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import ru.practicum.ewm.stats.dto.RequestStatListTO;
 import ru.practicum.ewm.stats.model.HitRequest;
+import ru.practicum.ewm.stats.setup.GenericTests;
 import ru.practicum.ewm.stats.utils.ConverterRequest;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ConverterRequestTest {
-    private LocalDateTime start;
-    private LocalDateTime end;
-    private List<String> uris;
-
+public class ConverterRequestTest extends GenericTests {
     @BeforeEach
     void setUp() {
-        start = LocalDateTime.now();
-        end = start.plusHours(1);
-        uris = Collections.emptyList();
+        initVariables();
     }
 
     @Test
