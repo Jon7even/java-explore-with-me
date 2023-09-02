@@ -80,4 +80,21 @@ public class StatClientTest extends GenericTests {
         assertEquals(objectMapper.writeValueAsString(result.getBody()), original);
     }
 
+    @Test
+    @DisplayName("Запросить статистику с помощью клиента Список должен быть пуст")
+    void shouldGetStatsByClientListEmpty_thenStatus200() throws Exception {
+        String original = "[]";
+
+        RequestStatListTO requestStatList = RequestStatListTO.builder()
+                .start(start.minusYears(1))
+                .end(end.plusYears(1))
+                .uris(uris)
+                .unique(true)
+                .build();
+        ResponseEntity<Object> result = statClient.getStats(requestStatList);
+
+        assertEquals(result.getStatusCodeValue(), 200);
+        assertEquals(objectMapper.writeValueAsString(result.getBody()), original);
+    }
+
 }
