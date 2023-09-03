@@ -7,7 +7,7 @@ import ru.practicum.ewm.stats.model.HitRequest;
 @UtilityClass
 public class ConverterRequest {
     public HitRequest getHitRequest(RequestStatListTO requestStatListTO) {
-        if (requestStatListTO.isUnique()) {
+        if (requestStatListTO.getUnique()) {
 
             if (requestStatListTO.getUris() != null && !requestStatListTO.getUris().isEmpty()) {
                 return HitRequest.URI_UNIQUE_STATS;

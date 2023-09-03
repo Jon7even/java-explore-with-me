@@ -38,7 +38,7 @@ public class StatController {
             @RequestParam @DateTimeFormat(pattern = DATE_TIME_HIT) LocalDateTime start,
             @RequestParam @DateTimeFormat(pattern = DATE_TIME_HIT) LocalDateTime end,
             @RequestParam(required = false) List<String> uris,
-            @RequestParam(defaultValue = "false") boolean unique,
+            @RequestParam(defaultValue = "false") Boolean unique,
             HttpServletRequest request) {
 
         log.debug("On {} was used method {}", request.getRequestURL(), request.getMethod());

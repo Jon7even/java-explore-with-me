@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
@@ -26,5 +27,6 @@ public class RequestStatListTO {
     @Nullable
     private List<String> uris;
 
-    private boolean unique;
+    @NotNull
+    private Boolean unique;
 }

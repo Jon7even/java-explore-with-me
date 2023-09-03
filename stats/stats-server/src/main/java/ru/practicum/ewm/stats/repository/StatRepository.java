@@ -2,12 +2,14 @@ package ru.practicum.ewm.stats.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 import ru.practicum.ewm.stats.model.HitEntity;
 import ru.practicum.ewm.stats.projections.HitTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Repository
 public interface StatRepository extends JpaRepository<HitEntity, Long> {
     @Query("SELECT new ru.practicum.ewm.stats.projections.HitTO(ht.app, ht.uri, COUNT(ht.ip)) " +
             " FROM HitEntity AS ht " +
