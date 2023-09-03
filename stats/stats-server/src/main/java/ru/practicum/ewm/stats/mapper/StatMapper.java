@@ -29,7 +29,7 @@ public class StatMapper {
                 .build();
     }
 
-    public RequestStatListTO toRequestDTO(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
+    public RequestStatListTO toRequestDTO(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         return RequestStatListTO.builder()
                 .start(start)
                 .end(end)
