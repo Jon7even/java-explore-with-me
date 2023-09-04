@@ -1,2 +1,3 @@
 # java-explore-with-me
-Template repository for ExploreWithMe project.
+
+#### Hi! This is my graduate thesis on the java backend.
