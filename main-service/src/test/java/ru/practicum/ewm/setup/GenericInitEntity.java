@@ -1,5 +1,6 @@
 package ru.practicum.ewm.setup;
 
+import ru.practicum.ewm.category.dto.NewCategoryDto;
 import ru.practicum.ewm.users.dto.NewUserRequest;
 
 public class GenericInitEntity {
@@ -13,7 +14,13 @@ public class GenericInitEntity {
 
     protected NewUserRequest thirdNewUserRequest;
 
-    protected void initUserCreateTO() {
+    protected NewCategoryDto firstNewCategoryDto;
+
+    protected NewCategoryDto secondNewCategoryDto;
+
+    protected NewCategoryDto thirdNewCategoryDto;
+
+    protected void initNewUserRequest() {
         firstNewUserRequest = NewUserRequest.builder()
                 .email("firstEmail@test.ru")
                 .name("firstUserTest")
@@ -25,6 +32,18 @@ public class GenericInitEntity {
         thirdNewUserRequest = NewUserRequest.builder()
                 .email("thirdEmail@test.ru")
                 .name("thirdUserTest")
+                .build();
+    }
+
+    protected void initNewCategoryDto() {
+        firstNewCategoryDto = NewCategoryDto.builder()
+                .name("TestFirstCategory")
+                .build();
+        secondNewCategoryDto = NewCategoryDto.builder()
+                .name("TestSecondCategory")
+                .build();
+        thirdNewCategoryDto = NewCategoryDto.builder()
+                .name("TestThirdCategory")
                 .build();
     }
 

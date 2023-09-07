@@ -13,6 +13,7 @@ import java.util.List;
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(source = "newUserRequest.name", target = "name")
     @Mapping(source = "newUserRequest.email", target = "email")
     UserEntity toEntityFromDTOCreate(NewUserRequest newUserRequest);

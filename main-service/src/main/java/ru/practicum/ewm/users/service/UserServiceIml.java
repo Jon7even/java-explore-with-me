@@ -31,11 +31,11 @@ public class UserServiceIml implements UserService {
 
     @Transactional
     @Override
-    public UserDto createUser(NewUserRequest userCreateTO) {
-        log.debug("New userTO came {} [UserRequestCreateTO={}]", SERVICE_FROM_CONTROLLER, userCreateTO);
-        UserEntity user = UserMapper.INSTANCE.toEntityFromDTOCreate(userCreateTO);
+    public UserDto createUser(NewUserRequest newUserRequest) {
+        log.debug("New newUserRequest came {} [newUserRequest={}]", SERVICE_FROM_CONTROLLER, newUserRequest);
+        UserEntity user = UserMapper.INSTANCE.toEntityFromDTOCreate(newUserRequest);
 
-        checkEmailOnDuplicate(userCreateTO.getEmail());
+        checkEmailOnDuplicate(newUserRequest.getEmail());
 
         log.debug("Add new entity [user={}] {}", user, SERVICE_IN_DB);
         UserEntity createdUser = userRepository.save(user);
@@ -68,7 +68,7 @@ public class UserServiceIml implements UserService {
     @Transactional
     @Override
     public void deleteUserById(Long idUser) {
-        findUserEntityById(idUser);
+        existDoesUserEntityById(idUser);
 
         log.debug("Remove [idUser={}] {}", idUser, SERVICE_IN_DB);
         userRepository.deleteById(idUser);
@@ -82,7 +82,7 @@ public class UserServiceIml implements UserService {
         }
     }
 
-    private void findUserEntityById(Long idUser) {
+    private void existDoesUserEntityById(Long idUser) {
         log.debug("Start check exist [idUser={}] {}", idUser, SERVICE_IN_DB);
 
         if (userRepository.existsById(idUser)) {

@@ -1,10 +1,13 @@
 package ru.practicum.ewm.controllers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import ru.practicum.ewm.setup.GenericControllerTest;
 import ru.practicum.ewm.users.dto.UserDto;
+import ru.practicum.ewm.users.service.UserService;
 
 import java.util.Collections;
 
@@ -16,6 +19,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.practicum.ewm.constants.NamesExceptions.DUPLICATE_EMAIL;
 
 public class UserControllerTest extends GenericControllerTest {
+    @Autowired
+    protected UserService userService;
+
+    @BeforeEach
+    void setUp() {
+        initNewUserRequest();
+    }
+
     @Test
     @DisplayName("Пользователь должен создаться с релевантными полями [createUser]")
     void shouldCreateUser_thenStatus201() throws Exception {
@@ -110,7 +121,7 @@ public class UserControllerTest extends GenericControllerTest {
     }
 
     @Test
-    @DisplayName("Получить всех пользователей без указания ListIds [getUsersByListId]")
+    @DisplayName("Получить всех пользователей c указанием ListIds [getUsersByListId]")
     void shouldGetAllUsersByListNotEmpty_thenStatus200() throws Exception {
         UserDto user1 = userService.createUser(firstNewUserRequest);
         UserDto user2 = userService.createUser(secondNewUserRequest);
