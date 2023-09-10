@@ -37,7 +37,7 @@ public class CategoryPublicController {
     }
 
     @GetMapping("/{catId}")
-    public ResponseEntity<CategoryDto> getCategoryById(@PathVariable @Positive Long catId,
+    public ResponseEntity<CategoryDto> getCategoryById(@PathVariable @Positive Integer catId,
                                                        HttpServletRequest request) {
 
         log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());

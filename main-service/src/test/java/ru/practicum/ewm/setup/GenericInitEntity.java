@@ -8,6 +8,10 @@ public class GenericInitEntity {
 
     protected Long SECOND_ID = 2L;
 
+    protected Integer FIRST_ID_INTEGER = 1;
+
+    protected Integer SECOND_ID_INTEGER = 2;
+
     protected NewUserRequest firstNewUserRequest;
 
     protected NewUserRequest secondNewUserRequest;

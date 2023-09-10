@@ -46,10 +46,10 @@ public class UserServiceIml implements UserService {
 
     @Override
     public List<UserDto> getUsersByListId(List<Long> ids, Integer from, Integer size) {
-        log.debug("Get all users {}", SERVICE_IN_DB);
         List<UserEntity> listUsers;
         Pageable pageable = ConverterPage.getPageRequest(from, size, Optional.of(DEFAULT_SORT_BY_ID));
 
+        log.debug("Get list users by [ids={}] and pages {}", ids, SERVICE_IN_DB);
         if (ids.isEmpty()) {
             listUsers = userRepository.findAll(pageable).getContent();
         } else {
@@ -67,29 +67,29 @@ public class UserServiceIml implements UserService {
 
     @Transactional
     @Override
-    public void deleteUserById(Long idUser) {
-        existDoesUserEntityById(idUser);
+    public void deleteUserById(Long userId) {
+        existDoesUserEntityById(userId);
 
-        log.debug("Remove [idUser={}] {}", idUser, SERVICE_IN_DB);
-        userRepository.deleteById(idUser);
-        boolean isRemoved = userRepository.existsById(idUser);
+        log.debug("Remove [userId={}] {}", userId, SERVICE_IN_DB);
+        userRepository.deleteById(userId);
+        boolean isRemoved = userRepository.existsById(userId);
 
         if (!isRemoved) {
-            log.debug("User by [id={}] has removed {}", idUser, SERVICE_FROM_DB);
+            log.debug("User by [userId={}] has removed {}", userId, SERVICE_FROM_DB);
         } else {
-            log.error("User by [id={}] was not removed", idUser);
-            throw new EntityNotDeletedException(String.format("User with id=%d was not deleted", idUser));
+            log.error("User by [userId={}] was not removed", userId);
+            throw new EntityNotDeletedException(String.format("User with id=%d was not deleted", userId));
         }
     }
 
-    private void existDoesUserEntityById(Long idUser) {
-        log.debug("Start check exist [idUser={}] {}", idUser, SERVICE_IN_DB);
+    private void existDoesUserEntityById(Long userId) {
+        log.debug("Start check exist [userId={}] {}", userId, SERVICE_IN_DB);
 
-        if (userRepository.existsById(idUser)) {
-            log.debug("Check was successful found [idUser={}] {}", idUser, SERVICE_FROM_DB);
+        if (userRepository.existsById(userId)) {
+            log.debug("Check was successful found [userId={}] {}", userId, SERVICE_FROM_DB);
         } else {
-            log.warn("User by [id={}] was not found", idUser);
-            throw new EntityNotFoundException(String.format("User with id=%d was not found", idUser));
+            log.warn("User by [userId={}] was not found", userId);
+            throw new EntityNotFoundException(String.format("User with id=%d was not found", userId));
         }
     }
 

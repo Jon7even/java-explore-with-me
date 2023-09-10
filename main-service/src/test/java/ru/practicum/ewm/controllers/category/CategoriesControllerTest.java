@@ -1,4 +1,4 @@
-package ru.practicum.ewm.controllers;
+package ru.practicum.ewm.controllers.category;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +32,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
                         .content(objectMapper.writeValueAsString(firstNewCategoryDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").value(FIRST_ID))
+                .andExpect(jsonPath("id").value(FIRST_ID_INTEGER))
                 .andExpect(jsonPath("name").value(firstNewCategoryDto.getName()));
     }
 
@@ -76,14 +76,14 @@ public class CategoriesControllerTest extends GenericControllerTest {
     @DisplayName("Категория должна удалиться по [ID] [removeCategoryById]")
     void shouldDeleteCategoryById_thenStatus204And404() throws Exception {
         categoryService.createCategory(firstNewCategoryDto);
-        Long idFirstCategory = categoryService.getCategoryById(FIRST_ID).getId();
+        Integer idFirstCategory = categoryService.getCategoryById(FIRST_ID_INTEGER).getId();
 
-        mockMvc.perform(delete("/admin/categories/{catId}", SECOND_ID))
+        mockMvc.perform(delete("/admin/categories/{catId}", SECOND_ID_INTEGER))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("status").value("NOT_FOUND"))
                 .andExpect(jsonPath("reason").value("The required object was not found."))
                 .andExpect(jsonPath("message")
-                        .value("Category with id=" + SECOND_ID + " was not found"))
+                        .value("Category with id=" + SECOND_ID_INTEGER + " was not found"))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
         mockMvc.perform(delete("/admin/categories/{catId}", idFirstCategory))
@@ -99,19 +99,19 @@ public class CategoriesControllerTest extends GenericControllerTest {
         categoryService.createCategory(firstNewCategoryDto);
 
         firstNewCategoryDto.setName("UpdatedCategory");
-        mockMvc.perform(patch("/admin/categories/{catId}", FIRST_ID)
+        mockMvc.perform(patch("/admin/categories/{catId}", FIRST_ID_INTEGER)
                         .content(objectMapper.writeValueAsString(firstNewCategoryDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(FIRST_ID))
+                .andExpect(jsonPath("id").value(FIRST_ID_INTEGER))
                 .andExpect(jsonPath("name").value(firstNewCategoryDto.getName()));
         firstNewCategoryDto.setName("UpdatedCategory");
 
-        mockMvc.perform(patch("/admin/categories/{catId}", FIRST_ID)
+        mockMvc.perform(patch("/admin/categories/{catId}", FIRST_ID_INTEGER)
                         .content(objectMapper.writeValueAsString(firstNewCategoryDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(FIRST_ID))
+                .andExpect(jsonPath("id").value(FIRST_ID_INTEGER))
                 .andExpect(jsonPath("name").value(firstNewCategoryDto.getName()));
     }
 
@@ -144,17 +144,17 @@ public class CategoriesControllerTest extends GenericControllerTest {
     void shouldGetCategoryById_thenStatus200AndStatus404() throws Exception {
         categoryService.createCategory(firstNewCategoryDto);
 
-        mockMvc.perform(get("/categories/{id}", FIRST_ID))
+        mockMvc.perform(get("/categories/{id}", FIRST_ID_INTEGER))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(FIRST_ID))
+                .andExpect(jsonPath("id").value(FIRST_ID_INTEGER))
                 .andExpect(jsonPath("name").value(firstNewCategoryDto.getName()));
 
-        mockMvc.perform(get("/categories/{id}", SECOND_ID))
+        mockMvc.perform(get("/categories/{id}", SECOND_ID_INTEGER))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("status").value("NOT_FOUND"))
                 .andExpect(jsonPath("reason").value("The required object was not found."))
                 .andExpect(jsonPath("message")
-                        .value("Category with id=" + SECOND_ID + " was not found"))
+                        .value("Category with id=" + SECOND_ID_INTEGER + " was not found"))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
     }
 

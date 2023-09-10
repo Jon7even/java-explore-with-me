@@ -45,7 +45,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     @Override
-    public void deleteCategoryById(Long catId) {
+    public void deleteCategoryById(Integer catId) {
         existDoesCategoryEntityById(catId);
 
         log.debug("Remove [idCategory={}] {}", catId, SERVICE_IN_DB);
@@ -62,7 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     @Override
-    public CategoryDto updateCategory(NewCategoryDto newCategoryDto, Long catId) {
+    public CategoryDto updateCategory(NewCategoryDto newCategoryDto, Integer catId) {
         log.debug("Category for update came {} [newCategoryDto={}]", SERVICE_FROM_CONTROLLER, newCategoryDto);
 
         CategoryEntity category = CategoryMapper.INSTANCE.toEntityFromDTOUpdate(newCategoryDto, catId);
@@ -98,7 +98,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto getCategoryById(Long catId) {
+    public CategoryDto getCategoryById(Integer catId) {
         log.debug("Get category by [catId={}] {}", catId, SERVICE_IN_DB);
         Optional<CategoryEntity> foundCategory = categoryRepository.findById(catId);
 
@@ -111,7 +111,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
-    private void existDoesCategoryEntityById(Long idCategory) {
+    private void existDoesCategoryEntityById(Integer idCategory) {
         log.debug("Start check exist [idCategory={}] {}", idCategory, SERVICE_IN_DB);
 
         if (categoryRepository.existsById(idCategory)) {
@@ -122,8 +122,8 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
-    private CategoryEntity findCategoryEntityById(Long idCategory) {
-        log.debug("Get category entity for checking by [idItem={}] {}", idCategory, SERVICE_IN_DB);
+    private CategoryEntity findCategoryEntityById(Integer idCategory) {
+        log.debug("Get category entity for checking by [idCategory={}] {}", idCategory, SERVICE_IN_DB);
         Optional<CategoryEntity> foundCheckCategory = categoryRepository.findById(idCategory);
 
         if (foundCheckCategory.isPresent()) {

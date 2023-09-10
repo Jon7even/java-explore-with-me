@@ -1,4 +1,4 @@
-package ru.practicum.ewm.controllers;
+package ru.practicum.ewm.controllers.user;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -5,6 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import ru.practicum.ewm.users.dto.NewUserRequest;
 import ru.practicum.ewm.users.dto.UserDto;
+import ru.practicum.ewm.users.dto.UserShortDto;
 import ru.practicum.ewm.users.model.UserEntity;
 
 import java.util.List;
@@ -22,6 +23,10 @@ public interface UserMapper {
     @Mapping(source = "userEntity.name", target = "name")
     @Mapping(source = "userEntity.email", target = "email")
     UserDto toDTOResponseFromEntity(UserEntity userEntity);
+
+    @Mapping(source = "userEntity.id", target = "id")
+    @Mapping(source = "userEntity.name", target = "name")
+    UserShortDto toDTOShortResponseFromEntity(UserEntity userEntity);
 
     @Mapping(source = "userEntity.id", target = "id")
     @Mapping(source = "userEntity.name", target = "name")

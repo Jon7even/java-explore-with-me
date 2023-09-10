@@ -27,6 +27,6 @@ public interface CategoryMapper {
 
     @Mapping(source = "catId", target = "id")
     @Mapping(source = "newCategoryDto.name", target = "name")
-    CategoryEntity toEntityFromDTOUpdate(NewCategoryDto newCategoryDto, Long catId);
+    CategoryEntity toEntityFromDTOUpdate(NewCategoryDto newCategoryDto, Integer catId);
 
 }
