@@ -12,6 +12,7 @@ import ru.practicum.ewm.users.dto.UserShortDto;
 import ru.practicum.ewm.users.model.UserEntity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface EventMapper {
@@ -55,6 +56,25 @@ public interface EventMapper {
     @Mapping(target = "views", ignore = true)
     void updateEntityFromDTO(UpdateEventUserRequest eventDto, @MappingTarget EventEntity entity);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(source = "eventDto.annotation", target = "annotation")
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "confirmedRequests", ignore = true)
+    @Mapping(target = "createdOn", ignore = true)
+    @Mapping(source = "eventDto.description", target = "description")
+    @Mapping(source = "eventDto.eventDate", target = "eventDate")
+    @Mapping(target = "initiator", ignore = true)
+    @Mapping(target = "location", ignore = true)
+    @Mapping(source = "eventDto.paid", target = "paid")
+    @Mapping(source = "eventDto.participantLimit", target = "participantLimit")
+    @Mapping(source = "now", target = "publishedOn")
+    @Mapping(source = "eventDto.requestModeration", target = "requestModeration")
+    @Mapping(target = "state", ignore = true)
+    @Mapping(source = "eventDto.title", target = "title")
+    @Mapping(target = "views", ignore = true)
+    void updateEntityFromDTO(UpdateEventAdminRequest eventDto, @MappingTarget EventEntity entity, LocalDateTime now);
+
     @Mapping(source = "eventEntity.annotation", target = "annotation")
     @Mapping(source = "category", target = "category")
     @Mapping(source = "eventEntity.confirmedRequests", target = "confirmedRequests")
@@ -85,4 +105,14 @@ public interface EventMapper {
     @Mapping(source = "eventEntity.views", target = "views")
     EventShortDto toDTOShortResponseFromEntity(EventEntity eventEntity, CategoryDto category, UserShortDto initiator);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
+    @Mapping(source = "users", target = "users")
+    @Mapping(source = "states", target = "states")
+    @Mapping(source = "categories", target = "categories")
+    @Mapping(source = "rangeStart", target = "rangeStart")
+    @Mapping(source = "rangeEnd", target = "rangeEnd")
+    @Mapping(source = "from", target = "from")
+    @Mapping(source = "size", target = "size")
+    ParamsSortDto toDTOParamFromList(List<Long> users,List<EventState> states, List<Long> categories,
+                                     LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size);
 }

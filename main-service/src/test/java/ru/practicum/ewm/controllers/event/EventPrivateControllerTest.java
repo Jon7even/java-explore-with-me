@@ -284,7 +284,7 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
 
     @Test
     @DisplayName("Обновить событие владельцем и получить full DTO [updateById]")
-    void shouldUpdateEventByInitiatorId_thenStatus200() throws Exception {
+    void shouldUpdateEventByInitiatorId_thenStatus200And404() throws Exception {
         EventFullDto event1 = eventService.createEvent(newEventDtoFieldsDefault, FIRST_ID);
         eventService.createEvent(newEventDtoStandard, FIRST_ID);
 

@@ -6,7 +6,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.events.dto.EventFullDto;
-import ru.practicum.ewm.events.dto.EventShortDto;
 import ru.practicum.ewm.events.dto.ParamsSortDto;
 import ru.practicum.ewm.events.dto.UpdateEventAdminRequest;
 import ru.practicum.ewm.events.model.EventState;
@@ -34,9 +33,9 @@ public class EventAdminController {
     public ResponseEntity<List<EventFullDto>> getByParams(
             @RequestParam(defaultValue = "#{T(java.util.Collections).emptyList()}") List<Long> users,
             @RequestParam(defaultValue = "#{T(java.util.Collections).emptyList()}") List<EventState> states,
-            @RequestParam(defaultValue = "#{T(java.util.Collections).emptyList()}") List<Long> categories,
-            @RequestParam @DateTimeFormat(pattern = DATE_TIME_DEFAULT) LocalDateTime rangeStart,
-            @RequestParam @DateTimeFormat(pattern = DATE_TIME_DEFAULT) LocalDateTime rangeEnd,
+            @RequestParam(defaultValue = "#{T(java.util.Collections).emptyList()}") List<Integer> categories,
+            @RequestParam(required = false) @DateTimeFormat(pattern = DATE_TIME_DEFAULT) LocalDateTime rangeStart,
+            @RequestParam(required = false) @DateTimeFormat(pattern = DATE_TIME_DEFAULT) LocalDateTime rangeEnd,
             @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
             @Positive @RequestParam(name = "size", defaultValue = "10") Integer size,
             HttpServletRequest request) {
@@ -45,14 +44,14 @@ public class EventAdminController {
 
         return ResponseEntity.ok().body(eventService.getListEventByParams(
                 ParamsSortDto.builder()
-                .users(users)
-                .states(states)
-                .categories(categories)
-                .rangeStart(rangeStart)
-                .rangeEnd(rangeEnd)
-                .from(from)
-                .size(size)
-                .build())
+                        .users(users)
+                        .states(states)
+                        .categories(categories)
+                        .rangeStart(rangeStart)
+                        .rangeEnd(rangeEnd)
+                        .from(from)
+                        .size(size)
+                        .build())
         );
     }
 

@@ -79,6 +79,7 @@
 			<artifactId>lombok-mapstruct-binding</artifactId>
 			<version>${version.mapstruct-lombok}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>ru.practicum</groupId>
 			<artifactId>stats-client</artifactId>

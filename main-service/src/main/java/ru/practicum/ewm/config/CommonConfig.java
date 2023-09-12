@@ -32,6 +32,12 @@
  * Ограничивает количество участников
  *
  *
+ * DEFAULT_MONTHS_COUNT
+ * Если администратор не указал свой диапазон времени,
+ * Срабатывает дефолтный диапазон поиска по схеме:
+ * текущее время + COUNT
+ *
+ *
  */
 
 package ru.practicum.ewm.config;
@@ -45,6 +51,8 @@ import java.time.Duration;
 public class CommonConfig {
     public static final Duration DEFAULT_CONSTRAIN_TIME = Duration.ofHours(2);
 
+    public static final Duration ADMIN_CONSTRAIN_TIME = Duration.ofHours(1);
+
     public static final EventState DEFAULT_INITIAL_STATE = EventState.PENDING;
 
     public static final boolean DEFAULT_FIELD_PAID = false;
@@ -52,4 +60,6 @@ public class CommonConfig {
     public static final boolean DEFAULT_FIELD_RQS_MODERATION = true;
 
     public static final int DEFAULT_FIELD_PARTICIPANT = 0;
+
+    public static final int DEFAULT_MONTHS_COUNT = 3;
 }

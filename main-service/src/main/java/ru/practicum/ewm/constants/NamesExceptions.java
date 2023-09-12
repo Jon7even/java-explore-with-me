@@ -12,5 +12,14 @@ public class NamesExceptions {
 
     public static final String EVENT_DATE_BEFORE_DURATION = "Field: eventDate. Error: must be before 2 hours.";
 
+    public static final String START_AFTER_END = "Error: range: start after end.";
+
+    public static final String EVENT_DATE_BEFORE_ADMIN = "Field: eventDate. Error: must be before 1 hours.";
+
     public static final String EVENT_UPDATE_REJECTED = "Only pending or canceled events can be changed";
+
+    public static final String EVENT_CONFIRM_REJECTED = "Only pending events can be changed";
+
+    public static final String EVENT_PUBLISHED_REJECTED = "Cannot publish the event because it's not in the " +
+            "right state: PUBLISHED";
 }
