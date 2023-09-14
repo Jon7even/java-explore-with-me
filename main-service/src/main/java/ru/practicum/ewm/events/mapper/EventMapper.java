@@ -104,15 +104,4 @@ public interface EventMapper {
     @Mapping(source = "eventEntity.title", target = "title")
     @Mapping(source = "eventEntity.views", target = "views")
     EventShortDto toDTOShortResponseFromEntity(EventEntity eventEntity, CategoryDto category, UserShortDto initiator);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
-    @Mapping(source = "users", target = "users")
-    @Mapping(source = "states", target = "states")
-    @Mapping(source = "categories", target = "categories")
-    @Mapping(source = "rangeStart", target = "rangeStart")
-    @Mapping(source = "rangeEnd", target = "rangeEnd")
-    @Mapping(source = "from", target = "from")
-    @Mapping(source = "size", target = "size")
-    ParamsSortDto toDTOParamFromList(List<Long> users,List<EventState> states, List<Long> categories,
-                                     LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size);
 }

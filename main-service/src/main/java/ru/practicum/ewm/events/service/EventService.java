@@ -2,6 +2,7 @@ package ru.practicum.ewm.events.service;
 
 import ru.practicum.ewm.events.dto.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface EventService {
@@ -16,4 +17,8 @@ public interface EventService {
     List<EventFullDto> getListEventByParams(ParamsSortDto paramsSortDto);
 
     EventFullDto confirmEvent(Long eventId, UpdateEventAdminRequest updateEventAdminRequest);
+
+    List<EventShortDto> getPublicListShortEventByParams(PublicParamsSortDto paramsSortDto);
+
+    EventFullDto getPublicEventById(Long eventId, HttpServletRequest request);
 }

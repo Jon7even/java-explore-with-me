@@ -19,6 +19,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
     Optional<EventEntity> findEventByIdAndInitiator(@Param("id") Long id, @Param("initiator") UserEntity initiator);
 
+    Optional<EventEntity> findEventByIdAndState(@Param("id") Long id, @Param("state") EventState state);
 
     @Query("SELECT ev " +
             " FROM EventEntity AS ev " +
@@ -36,4 +37,49 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
                                                    @Param("rangeStart") LocalDateTime rangeStart,
                                                    @Param("rangeEnd") LocalDateTime rangeEnd,
                                                    Pageable pageable);
+
+    @Query("SELECT ev " +
+            " FROM EventEntity AS ev " +
+            " LEFT JOIN FETCH ev.initiator " +
+            " LEFT JOIN FETCH ev.location " +
+            " LEFT JOIN FETCH ev.category " +
+            "WHERE ev.eventDate >= :rangeStart " +
+            "  AND ev.eventDate <= :rangeEnd " +
+            "  AND ev.state      = :state " +
+            "  AND ( :paid         IS NULL OR ( :paid         IS NOT NULL AND ev.paid = :paid ) ) " +
+            "  AND ( (:categories) IS NULL OR ( (:categories) IS NOT NULL AND ev.category.id IN (:categories) ) ) " +
+            "  AND ( :text         IS NULL OR ( :text         IS NOT NULL AND " +
+            "                      LOWER (ev.annotation) LIKE LOWER(concat('%', :text, '%')) " +
+            "                           OR LOWER (ev.description) LIKE LOWER(concat('%', :text, '%'))  ) )")
+    List<EventEntity> findEventsOnlyAvailableByParamsAndPageable(@Param("state") EventState state,
+                                                                 @Param("text") String text,
+                                                                 @Param("categories") List<Integer> categories,
+                                                                 @Param("paid") Boolean paid,
+                                                                 @Param("rangeStart") LocalDateTime rangeStart,
+                                                                 @Param("rangeEnd") LocalDateTime rangeEnd,
+                                                                 Pageable pageable);
+
+    @Query("SELECT ev " +
+            " FROM EventEntity AS ev " +
+            " LEFT JOIN FETCH ev.initiator " +
+            " LEFT JOIN FETCH ev.location " +
+            " LEFT JOIN FETCH ev.category " +
+            "WHERE ev.eventDate >= :rangeStart " +
+            "  AND ev.eventDate <= :rangeEnd " +
+            "  AND ev.state      = :state " +
+            "  AND ( :paid         IS NULL OR ( :paid         IS NOT NULL AND ev.paid = :paid ) ) " +
+            "  AND ( (:categories) IS NULL OR ( (:categories) IS NOT NULL AND ev.category.id IN (:categories) ) ) " +
+            "  AND ( :text         IS NULL OR ( :text         IS NOT NULL AND " +
+            "                      LOWER (ev.annotation) LIKE LOWER(concat('%', :text, '%')) " +
+            "                           OR LOWER (ev.description) LIKE LOWER(concat('%', :text, '%'))  ) ) " +
+            "  AND ev.participantLimit = 0 " +
+            "      OR ev.participantLimit <= ev.confirmedRequests")
+    List<EventEntity> findEventsByParamsAndPageable(@Param("state") EventState state,
+                                                    @Param("text") String text,
+                                                    @Param("categories") List<Integer> categories,
+                                                    @Param("paid") Boolean paid,
+                                                    @Param("rangeStart") LocalDateTime rangeStart,
+                                                    @Param("rangeEnd") LocalDateTime rangeEnd,
+                                                    Pageable pageable);
+
 }

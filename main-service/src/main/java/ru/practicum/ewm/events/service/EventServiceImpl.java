@@ -1,8 +1,12 @@
 package ru.practicum.ewm.events.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.category.dto.CategoryDto;
@@ -13,6 +17,7 @@ import ru.practicum.ewm.events.dto.*;
 import ru.practicum.ewm.events.mapper.EventMapper;
 import ru.practicum.ewm.events.mapper.LocationMapper;
 import ru.practicum.ewm.events.model.EventEntity;
+import ru.practicum.ewm.events.model.EventSort;
 import ru.practicum.ewm.events.model.EventState;
 import ru.practicum.ewm.events.model.LocationEntity;
 import ru.practicum.ewm.events.repository.EventRepository;
@@ -22,19 +27,23 @@ import ru.practicum.ewm.exception.EntityNotFoundException;
 import ru.practicum.ewm.exception.IncorrectMadeRequestException;
 import ru.practicum.ewm.exception.IntegrityConstraintException;
 import ru.practicum.ewm.stats.client.StatClient;
+import ru.practicum.ewm.stats.dto.HitCreateTO;
+import ru.practicum.ewm.stats.dto.HitResponseTO;
+import ru.practicum.ewm.stats.dto.RequestStatListTO;
 import ru.practicum.ewm.users.dto.UserShortDto;
 import ru.practicum.ewm.users.mapper.UserMapper;
 import ru.practicum.ewm.users.model.UserEntity;
 import ru.practicum.ewm.users.repository.UserRepository;
 import ru.practicum.ewm.utils.ConverterPage;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static ru.practicum.ewm.config.CommonConfig.DEFAULT_INITIAL_STATE;
-import static ru.practicum.ewm.config.CommonConfig.DEFAULT_MONTHS_COUNT;
+import static ru.practicum.ewm.config.CommonConfig.*;
 import static ru.practicum.ewm.constants.CommonSort.DEFAULT_SORT_BY_ID;
 import static ru.practicum.ewm.constants.NamesExceptions.*;
 import static ru.practicum.ewm.constants.NamesLogsInService.*;
@@ -158,8 +167,7 @@ public class EventServiceImpl implements EventService {
 
         LocalDateTime rangeStart;
         LocalDateTime rangeEnd;
-        if (paramsSortDto.getRangeStart() == null || paramsSortDto.getRangeEnd() == null ||
-                paramsSortDto.getRangeStart() == null && paramsSortDto.getRangeEnd() == null) {
+        if (paramsSortDto.getRangeStart() == null || paramsSortDto.getRangeEnd() == null) {
             LocalDateTime now = LocalDateTime.now();
             rangeStart = now;
             rangeEnd = now.plusMonths(DEFAULT_MONTHS_COUNT);
@@ -225,6 +233,80 @@ public class EventServiceImpl implements EventService {
                     LocationMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getLocation()));
         } else {
             log.warn("Event by [eventId={}] was not found", eventId);
+            throw new EntityNotFoundException(String.format("Event with id=%d was not found", eventId));
+        }
+    }
+
+    @Override
+    public List<EventShortDto> getPublicListShortEventByParams(PublicParamsSortDto paramsSortDto) {
+        Pageable pageable = ConverterPage.getPageRequest(paramsSortDto.getFrom(),
+                paramsSortDto.getSize(), Optional.of(getValidSorting(paramsSortDto.getSort())));
+        log.debug("Params Sort came by admin [params={}] and pages {}", paramsSortDto, SERVICE_FROM_CONTROLLER);
+
+        LocalDateTime rangeStart;
+        LocalDateTime rangeEnd;
+        if (paramsSortDto.getRangeStart() == null || paramsSortDto.getRangeEnd() == null) {
+            LocalDateTime now = LocalDateTime.now();
+            rangeStart = now;
+            rangeEnd = now.plusMonths(DEFAULT_MONTHS_COUNT);
+        } else {
+            checkValidTimeRange(paramsSortDto.getRangeStart(), paramsSortDto.getRangeEnd());
+            rangeStart = paramsSortDto.getRangeStart();
+            rangeEnd = paramsSortDto.getRangeEnd();
+        }
+
+        log.debug("Get Public list by [rangeStart={}] and [rangeEnd={}] {}", rangeStart, rangeEnd, SERVICE_IN_DB);
+        List<EventEntity> listEvents;
+
+        if (paramsSortDto.getOnlyAvailable()) {
+            listEvents = eventRepository.findEventsOnlyAvailableByParamsAndPageable(
+                    PUBLISHED, paramsSortDto.getText(), paramsSortDto.getCategories(),
+                    paramsSortDto.getPaid(), rangeStart, rangeEnd, pageable
+            );
+        } else {
+            listEvents = eventRepository.findEventsByParamsAndPageable(
+                    PUBLISHED, paramsSortDto.getText(), paramsSortDto.getCategories(),
+                    paramsSortDto.getPaid(), rangeStart, rangeEnd, pageable
+            );
+        }
+
+        if (listEvents.isEmpty()) {
+            log.debug("Has returned empty list events {}", SERVICE_FROM_DB);
+        } else {
+            log.debug("Found list events [count={}] {}", listEvents.size(), SERVICE_FROM_DB);
+        }
+
+        sendHitToStatsServer(paramsSortDto.getRequest());
+
+        return listEvents.stream()
+                .map((eventEntity -> EventMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity,
+                        CategoryMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getCategory()),
+                        UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator())
+                )))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public EventFullDto getPublicEventById(Long eventId, HttpServletRequest request) {
+        log.debug("Get public event by [eventId={}] {}", eventId, SERVICE_IN_DB);
+        Optional<EventEntity> foundEventEntity = eventRepository.findEventByIdAndState(eventId, PUBLISHED);
+
+        if (foundEventEntity.isPresent()) {
+            EventEntity event = foundEventEntity.get();
+            log.debug("Found [event={}] {}", event, SERVICE_FROM_DB);
+
+            event.setViews(Math.toIntExact(getHitsFromStatsServer(request)));
+            if (event.getViews() != 0) {
+                saveHits(event);
+            }
+            sendHitToStatsServer(request);
+
+            return EventMapper.INSTANCE.toDTOFullResponseFromEntity(event,
+                    CategoryMapper.INSTANCE.toDTOResponseFromEntity(event.getCategory()),
+                    UserMapper.INSTANCE.toDTOShortResponseFromEntity(event.getInitiator()),
+                    LocationMapper.INSTANCE.toDTOResponseFromEntity(event.getLocation()));
+        } else {
+            log.warn("Event by [eventId={}] with state Published was not found", eventId);
             throw new EntityNotFoundException(String.format("Event with id=%d was not found", eventId));
         }
     }
@@ -322,6 +404,16 @@ public class EventServiceImpl implements EventService {
         return stateForUpdate;
     }
 
+    private Sort getValidSorting(EventSort sort) {
+        Sort sorting;
+        if (sort == EventSort.EVENT_DATE) {
+            sorting = Sort.by(Sort.Direction.DESC, "eventDate");
+        } else {
+            sorting = Sort.by(Sort.Direction.DESC, "views");
+        }
+        return sorting;
+    }
+
     private EventState getValidEventStateForConfirm(EventState eventState) {
         EventState stateForConfirm;
 
@@ -381,6 +473,71 @@ public class EventServiceImpl implements EventService {
     private void checkValidTimeRange(LocalDateTime start, LocalDateTime end) {
         if (start.isAfter(end)) {
             throw new IncorrectMadeRequestException(START_AFTER_END);
+        }
+    }
+
+    private void saveHits(EventEntity event) {
+        log.debug("Set [eventId={}] [hits={}] {}", event.getId(), event.getViews(), SERVICE_IN_DB);
+        eventRepository.save(event);
+    }
+
+    private Long getHitsFromStatsServer(HttpServletRequest request) {
+        ResponseEntity<Object> responseFromServer = statClient.getStats(RequestStatListTO.builder()
+                .start(DATA_SEARCH_HITS)
+                .end(LocalDateTime.now())
+                .uris(Collections.singletonList(request.getRequestURI()))
+                .unique(true)
+                .build());
+        if (responseFromServer.getStatusCode().is2xxSuccessful()) {
+            log.debug("Get hits successfully [response={}]", responseFromServer);
+            ObjectMapper mapper = new ObjectMapper();
+
+            List<HitResponseTO> listResponse = Collections.emptyList();
+            Long hits;
+
+            try {
+                listResponse = Collections.singletonList(mapper.readValue(
+                        mapper.writeValueAsString(responseFromServer.getBody()), HitResponseTO.class));
+            } catch (JsonProcessingException e) {
+                log.error("Something went wrong on the statistics server, contact Dev-Ops. Error: Json");
+            }
+
+            if (listResponse.isEmpty()) {
+                log.debug("HitResponseTO - empty, given hits default 0");
+                hits = 0L;
+            } else if (listResponse.size() == 1) {
+
+                if (listResponse.get(0).getUri().equals(request.getRequestURI())) {
+                    hits = listResponse.get(0).getHits();
+                } else {
+                    log.error("Something went wrong on the statistics server, contact Dev-Ops. Error: Uri");
+                    hits = 0L;
+                }
+
+            } else {
+                log.error("Something went wrong on the statistics server, contact Dev-Ops. Error: Duplicate response");
+                hits = 0L;
+            }
+
+            log.debug("Return [hits={}]", hits);
+            return hits;
+        } else {
+            log.error("Something went wrong on the statistics server, contact Dev-Ops");
+            return 0L;
+        }
+    }
+
+    private void sendHitToStatsServer(HttpServletRequest request) {
+        ResponseEntity<Object> responseFromServer = statClient.createHit(HitCreateTO.builder()
+                .app("Explore With Me ***Stats Main Server***")
+                .uri(request.getRequestURI())
+                .ip(request.getRemoteAddr())
+                .timestamp(LocalDateTime.now())
+                .build());
+        if (responseFromServer.getStatusCode().is2xxSuccessful()) {
+            log.debug("View saved successfully [request={}]", request);
+        } else {
+            log.error("Something went wrong on the statistics server, contact Dev-Ops");
         }
     }
 

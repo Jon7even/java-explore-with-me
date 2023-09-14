@@ -70,5 +70,4 @@ public class EventPrivateController {
         return ResponseEntity.ok().body(eventService.updateEventById(userId, eventId, updateEventUserRequest));
     }
 
-
 }

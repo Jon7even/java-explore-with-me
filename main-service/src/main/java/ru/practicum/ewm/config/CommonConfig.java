@@ -38,6 +38,12 @@
  * текущее время + COUNT
  *
  *
+ * DATA_SEARCH_HITS
+ * Дата запуска проекта в прод
+ * Именно с этой даты сервер статистики будет искать
+ * количество просмотров URI
+ *
+ *
  */
 
 package ru.practicum.ewm.config;
@@ -46,6 +52,7 @@ import lombok.experimental.UtilityClass;
 import ru.practicum.ewm.events.model.EventState;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 
 @UtilityClass
 public class CommonConfig {
@@ -62,4 +69,6 @@ public class CommonConfig {
     public static final int DEFAULT_FIELD_PARTICIPANT = 0;
 
     public static final int DEFAULT_MONTHS_COUNT = 3;
+
+    public static final LocalDateTime DATA_SEARCH_HITS = LocalDateTime.of(2023, 1, 1, 0, 0);
 }
