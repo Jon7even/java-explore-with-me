@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import ru.practicum.ewm.category.model.CategoryEntity;
 import ru.practicum.ewm.events.model.EventEntity;
 import ru.practicum.ewm.events.model.EventState;
 import ru.practicum.ewm.users.model.UserEntity;
@@ -16,6 +17,8 @@ import java.util.Optional;
 @Repository
 public interface EventRepository extends JpaRepository<EventEntity, Long> {
     List<EventEntity> findAllByInitiatorId(@Param("id") Long initiatorId, Pageable pageable);
+
+    boolean existsEventByCategoryId(@Param("categoryId") Integer categoryId);
 
     Optional<EventEntity> findEventByIdAndInitiator(@Param("id") Long id, @Param("initiator") UserEntity initiator);
 
@@ -30,7 +33,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "  AND ev.eventDate <= :rangeEnd " +
             "  AND ( (:users)      IS NULL OR ( (:users)      IS NOT NULL AND ev.initiator.id IN (:users) ) ) " +
             "  AND ( (:states)     IS NULL OR ( (:states)     IS NOT NULL AND ev.state IN (:states) ) ) " +
-            "  AND ( (:categories) IS NULL OR ( (:categories) IS NOT NULL AND ev.category.id IN (:categories) ) ) ")
+            "  AND ( (:categories) IS NULL OR ( (:categories) IS NOT NULL AND ev.category.id IN (:categories) ) )")
     List<EventEntity> findByAdminParamsAndPageable(@Param("users") List<Long> users,
                                                    @Param("states") List<EventState> states,
                                                    @Param("categories") List<Integer> categories,

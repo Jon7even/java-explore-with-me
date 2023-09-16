@@ -10,6 +10,7 @@ import ru.practicum.ewm.category.dto.NewCategoryDto;
 import ru.practicum.ewm.category.mapper.CategoryMapper;
 import ru.practicum.ewm.category.model.CategoryEntity;
 import ru.practicum.ewm.category.repository.CategoryRepository;
+import ru.practicum.ewm.events.repository.EventRepository;
 import ru.practicum.ewm.exception.EntityNotDeletedException;
 import ru.practicum.ewm.exception.EntityNotFoundException;
 import ru.practicum.ewm.exception.IntegrityConstraintException;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static ru.practicum.ewm.constants.CommonSort.DEFAULT_SORT_BY_ID;
+import static ru.practicum.ewm.constants.NamesExceptions.CATEGORY_ALREADY_USED;
 import static ru.practicum.ewm.constants.NamesExceptions.DUPLICATE_CATEGORY;
 import static ru.practicum.ewm.constants.NamesLogsInService.*;
 
@@ -28,6 +30,7 @@ import static ru.practicum.ewm.constants.NamesLogsInService.*;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
+    private final EventRepository eventRepository;
 
     @Transactional
     @Override
@@ -48,6 +51,10 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategoryById(Integer catId) {
         existDoesCategoryEntityById(catId);
 
+        if (eventRepository.existsEventByCategoryId(catId)) {
+            throw new IntegrityConstraintException(CATEGORY_ALREADY_USED);
+        }
+
         log.debug("Remove [idCategory={}] {}", catId, SERVICE_IN_DB);
         categoryRepository.deleteById(catId);
         boolean isRemoved = categoryRepository.existsById(catId);
@@ -66,13 +73,14 @@ public class CategoryServiceImpl implements CategoryService {
         log.debug("Category for update came {} [newCategoryDto={}]", SERVICE_FROM_CONTROLLER, newCategoryDto);
 
         CategoryEntity category = CategoryMapper.INSTANCE.toEntityFromDTOUpdate(newCategoryDto, catId);
-        CategoryEntity checkedCategoryFromRepository = findCategoryEntityById(catId);
+        CategoryEntity checkedCategoryFromDB = findCategoryEntityById(catId);
 
-        if (category.getName().equals(checkedCategoryFromRepository.getName())) {
+        if (category.getName().equals(checkedCategoryFromDB.getName())) {
             log.warn("No need to update category data [categoryUpdate={}] [categoryResult={}]",
-                    category, checkedCategoryFromRepository);
+                    category, checkedCategoryFromDB);
             return CategoryMapper.INSTANCE.toDTOResponseFromEntity(category);
         } else {
+            checkNameOnDuplicate(category.getName());
             log.debug("Update category [category={}] {}", category, SERVICE_IN_DB);
             CategoryEntity updatedCategoryEntity = categoryRepository.save(category);
 

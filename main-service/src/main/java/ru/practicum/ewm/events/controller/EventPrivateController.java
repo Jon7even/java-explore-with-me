@@ -10,6 +10,9 @@ import ru.practicum.ewm.events.dto.EventShortDto;
 import ru.practicum.ewm.events.dto.NewEventDto;
 import ru.practicum.ewm.events.dto.UpdateEventUserRequest;
 import ru.practicum.ewm.events.service.EventService;
+import ru.practicum.ewm.requests.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.ewm.requests.dto.EventRequestStatusUpdateResult;
+import ru.practicum.ewm.requests.dto.ParticipationRequestDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -68,6 +71,28 @@ public class EventPrivateController {
         log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
 
         return ResponseEntity.ok().body(eventService.updateEventById(userId, eventId, updateEventUserRequest));
+    }
+
+    @GetMapping("/{eventId}/requests")
+    public ResponseEntity<List<ParticipationRequestDto>> getAllRequestsByInitiator(@PathVariable @Positive Long userId,
+                                                                           @PathVariable @Positive Long eventId,
+                                                                           HttpServletRequest request) {
+
+        log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
+
+        return ResponseEntity.ok().body(eventService.getAllRequestsByInitiator(userId, eventId));
+    }
+
+    @PatchMapping("/{eventId}/requests")
+    public ResponseEntity<EventRequestStatusUpdateResult> confirmRequestByInitiator(
+            @PathVariable @Positive Long userId,
+            @PathVariable @Positive Long eventId,
+            @Valid @RequestBody EventRequestStatusUpdateRequest updateRequest,
+            HttpServletRequest request) {
+
+        log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
+
+        return ResponseEntity.ok().body(eventService.confirmRequestByInitiator(userId, eventId, updateRequest));
     }
 
 }

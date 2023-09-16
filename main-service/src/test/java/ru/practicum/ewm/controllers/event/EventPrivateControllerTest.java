@@ -366,5 +366,4 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
     }
 
-
 }

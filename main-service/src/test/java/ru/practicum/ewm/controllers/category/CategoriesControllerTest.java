@@ -7,18 +7,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.service.CategoryService;
+import ru.practicum.ewm.events.dto.Location;
+import ru.practicum.ewm.events.dto.NewEventDto;
+import ru.practicum.ewm.events.service.EventService;
 import ru.practicum.ewm.setup.GenericControllerTest;
+import ru.practicum.ewm.users.service.UserService;
+
+import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.ewm.constants.NamesExceptions.CATEGORY_ALREADY_USED;
 import static ru.practicum.ewm.constants.NamesExceptions.DUPLICATE_CATEGORY;
 
 public class CategoriesControllerTest extends GenericControllerTest {
     @Autowired
-    protected CategoryService categoryService;
+    private CategoryService categoryService;
+
+    @Autowired
+    protected UserService userService;
+
+    @Autowired
+    private EventService eventService;
 
     @BeforeEach
     void setUp() {
@@ -74,7 +87,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
 
     @Test
     @DisplayName("Категория должна удалиться по [ID] [removeCategoryById]")
-    void shouldDeleteCategoryById_thenStatus204And404() throws Exception {
+    void shouldDeleteCategoryById_thenStatus204And404And409() throws Exception {
         categoryService.createCategory(firstNewCategoryDto);
         Integer idFirstCategory = categoryService.getCategoryById(FIRST_ID_INTEGER).getId();
 
@@ -91,6 +104,29 @@ public class CategoriesControllerTest extends GenericControllerTest {
 
         mockMvc.perform(delete("/admin/categories/{catId}", idFirstCategory))
                 .andExpect(status().isNotFound());
+
+        initNewUserRequest();
+        userService.createUser(firstNewUserRequest);
+        categoryService.createCategory(secondNewCategoryDto);
+        Location location = Location.builder()
+                .lat(55.4401)
+                .lon(37.3518)
+                .build();
+        NewEventDto newEventDtoFieldsDefault = NewEventDto.builder()
+                .annotation("Test annotation for annotation Default")
+                .category(SECOND_ID_INTEGER)
+                .description("Test description for description Default")
+                .eventDate(LocalDateTime.now().plusMonths(1))
+                .location(location)
+                .title("Test Title Default")
+                .build();
+        eventService.createEvent(newEventDtoFieldsDefault, FIRST_ID);
+        mockMvc.perform(delete("/admin/categories/{catId}", SECOND_ID))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("status").value("CONFLICT"))
+                .andExpect(jsonPath("reason").value("Integrity constraint has been violated."))
+                .andExpect(jsonPath("message").value(CATEGORY_ALREADY_USED))
+                .andExpect(jsonPath("timestamp").value(notNullValue()));
     }
 
     @Test

@@ -26,6 +26,13 @@ import ru.practicum.ewm.events.utils.ValidatorDefaultFields;
 import ru.practicum.ewm.exception.EntityNotFoundException;
 import ru.practicum.ewm.exception.IncorrectMadeRequestException;
 import ru.practicum.ewm.exception.IntegrityConstraintException;
+import ru.practicum.ewm.requests.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.ewm.requests.dto.EventRequestStatusUpdateResult;
+import ru.practicum.ewm.requests.dto.ParticipationRequestDto;
+import ru.practicum.ewm.requests.mapper.RequestMapper;
+import ru.practicum.ewm.requests.model.RequestEntity;
+import ru.practicum.ewm.requests.model.RequestStatus;
+import ru.practicum.ewm.requests.reopository.RequestRepository;
 import ru.practicum.ewm.stats.client.StatClient;
 import ru.practicum.ewm.stats.dto.HitCreateTO;
 import ru.practicum.ewm.stats.dto.HitResponseTO;
@@ -58,6 +65,7 @@ public class EventServiceImpl implements EventService {
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final RequestRepository requestRepository;
     private final StatClient statClient;
 
     @Override
@@ -109,8 +117,9 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventFullDto getFullEventById(Long userId, Long eventId) {
-        log.debug("Get  event by [eventId={}] by [userId={}] {}", eventId, userId, SERVICE_IN_DB);
         UserEntity userFromDB = findUserEntityById(userId);
+
+        log.debug("Get  event by [eventId={}] by [userId={}] {}", eventId, userId, SERVICE_IN_DB);
         Optional<EventEntity> foundEventEntity = eventRepository.findEventByIdAndInitiator(eventId, userFromDB);
 
         if (foundEventEntity.isPresent()) {
@@ -162,7 +171,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventFullDto> getListEventByParams(ParamsSortDto paramsSortDto) {
         Pageable pageable = ConverterPage.getPageRequest(paramsSortDto.getFrom(),
-                paramsSortDto.getSize(), Optional.of(DEFAULT_SORT_BY_ID));
+                paramsSortDto.getSize(), Optional.empty());
         log.debug("Params Sort came by admin [params={}] and pages {}", paramsSortDto, SERVICE_FROM_CONTROLLER);
 
         LocalDateTime rangeStart;
@@ -309,6 +318,93 @@ public class EventServiceImpl implements EventService {
             log.warn("Event by [eventId={}] with state Published was not found", eventId);
             throw new EntityNotFoundException(String.format("Event with id=%d was not found", eventId));
         }
+    }
+
+    @Override
+    public List<ParticipationRequestDto> getAllRequestsByInitiator(Long userId, Long eventId) {
+        UserEntity userFromDB = findUserEntityById(userId);
+
+        log.debug("Get all requests for event by [eventId={}] for user [userId={}] {}", eventId, userId, SERVICE_IN_DB);
+        List<RequestEntity> listRequests = requestRepository.findAllByEventIdAndEventInitiator(eventId, userFromDB);
+
+        if (listRequests.isEmpty()) {
+            log.debug("Has returned empty list requests {}", SERVICE_FROM_DB);
+        } else {
+            log.debug("Found list requests [count={}] {}", listRequests.size(), SERVICE_FROM_DB);
+        }
+
+        return RequestMapper.INSTANCE.toDTOResponseFromEntityList(listRequests);
+    }
+
+    @Transactional
+    @Override
+    public EventRequestStatusUpdateResult confirmRequestByInitiator(Long userId, Long eventId,
+                                                                    EventRequestStatusUpdateRequest updateRequest) {
+        log.debug("UpdateRequestDto for confirm request came {} [updateRequest={}]",
+                SERVICE_FROM_CONTROLLER, updateRequest);
+
+        EventEntity eventFromDb = findEventEntityById(eventId);
+        if (eventFromDb.getParticipantLimit() == 0 || !eventFromDb.getRequestModeration()) {
+            throw new IntegrityConstraintException(CONFIRM_NOT_REQUIRED);
+        }
+
+        UserEntity userFromDB = findUserEntityById(userId);
+        if (!eventFromDb.getInitiator().getId().equals(userFromDB.getId())) {
+            throw new IntegrityConstraintException(USER_NOT_INITIATOR);
+        }
+
+        List<RequestEntity> requestsFromDb = requestRepository.findAllByIdInAndEventInitiatorAndEvent(
+                updateRequest.getRequestIds(), userFromDB, eventFromDb);
+        log.debug("Has returned list [requests={}] {}", requestsFromDb, SERVICE_FROM_DB);
+        EventRequestStatusUpdateResult eventRequestUpdatedStatus;
+
+        switch (updateRequest.getStatus()) {
+
+            case CONFIRMED:
+                int countAvailableSeats = eventFromDb.getParticipantLimit() - eventFromDb.getConfirmedRequests();
+                int countConfirmRequest = updateRequest.getRequestIds().size();
+                log.debug("countAvailableSeats = {}, countConfirmRequest={}", countAvailableSeats, countConfirmRequest);
+                if ((countAvailableSeats - countConfirmRequest) < 0) {
+                    throw new IntegrityConstraintException(EVENT_IS_FULL_COUNT + countAvailableSeats);
+                }
+
+                requestsFromDb.forEach(request -> request.setStatus(RequestStatus.CONFIRMED));
+                eventFromDb.setConfirmedRequests(
+                        eventFromDb.getConfirmedRequests() + countConfirmRequest
+                );
+
+                log.debug("Confirm requests, set status [updateRequest={}] in [EventsIds={}] {}",
+                        updateRequest.getStatus(), updateRequest.getRequestIds(), SERVICE_IN_DB);
+                List<RequestEntity> requestsConfirm = requestRepository.saveAll(requestsFromDb);
+                eventRequestUpdatedStatus = RequestMapper.INSTANCE.toDTOResponseFromDTOList(
+                        RequestMapper.INSTANCE.toDTOResponseFromEntityList(requestsConfirm),
+                        Collections.emptyList()
+                );
+
+                log.debug("Update ConfirmedRequests in [event={}] {}", eventFromDb, SERVICE_IN_DB);
+                eventRepository.save(eventFromDb);
+                break;
+
+            case REJECTED:
+                if (checkStatusInListRequests(requestsFromDb, RequestStatus.CONFIRMED)) {
+                    throw new IntegrityConstraintException(REQUESTS_ALREADY_CONFIRMED);
+                }
+                requestsFromDb.forEach(request -> request.setStatus(RequestStatus.REJECTED));
+
+                log.debug("Confirm requests, set status [updateRequest={}] in [eventsIds={}] {}",
+                        updateRequest.getStatus(), updateRequest.getRequestIds(), SERVICE_IN_DB);
+                List<RequestEntity> requestsReject = requestRepository.saveAll(requestsFromDb);
+                eventRequestUpdatedStatus = RequestMapper.INSTANCE.toDTOResponseFromDTOList(
+                        Collections.emptyList(),
+                        RequestMapper.INSTANCE.toDTOResponseFromEntityList(requestsReject)
+                );
+                break;
+
+            default:
+                throw new IntegrityConstraintException(INCORRECT_STATUS);
+        }
+
+        return eventRequestUpdatedStatus;
     }
 
     private LocationEntity createLocation(Location location) {
@@ -539,6 +635,23 @@ public class EventServiceImpl implements EventService {
         } else {
             log.error("Something went wrong on the statistics server, contact Dev-Ops");
         }
+    }
+
+    private EventEntity findEventEntityById(Long eventId) {
+        log.debug("Get event entity for checking by [eventId={}] {}", eventId, SERVICE_IN_DB);
+        Optional<EventEntity> foundCheckEvent = eventRepository.findById(eventId);
+
+        if (foundCheckEvent.isPresent()) {
+            log.debug("Check was successful found [event={}] {}", foundCheckEvent.get(), SERVICE_FROM_DB);
+            return foundCheckEvent.get();
+        } else {
+            log.warn("Event by [eventId={}] was not found", foundCheckEvent);
+            throw new EntityNotFoundException(String.format("Event with id=%d was not found", eventId));
+        }
+    }
+
+    private Boolean checkStatusInListRequests(List<RequestEntity> requestEntities, RequestStatus status) {
+        return requestEntities.stream().anyMatch(request -> request.getStatus().equals(status));
     }
 
 }

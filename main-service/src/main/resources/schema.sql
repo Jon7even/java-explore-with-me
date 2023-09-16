@@ -42,3 +42,15 @@ CREATE TABLE IF NOT EXISTS event (
     CONSTRAINT          FK_EVENT_TO_LOCATION FOREIGN KEY(location_id)  REFERENCES location(id) ON DELETE CASCADE,
     CONSTRAINT          FK_EVENT_TO_USER     FOREIGN KEY(initiator_id) REFERENCES users(id)    ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS request (
+    id                  BIGINT                 NOT NULL GENERATED ALWAYS AS IDENTITY,
+    created             TIMESTAMP              WITHOUT TIME ZONE     NOT NULL,
+    event_id            BIGINT                 NOT NULL,
+    requester_id        BIGINT                 NOT NULL,
+    status              VARCHAR(32)            NOT NULL,
+    CONSTRAINT          PK_REQUEST             PRIMARY KEY(id),
+    CONSTRAINT          FK_REQUEST_TO_EVENT    FOREIGN KEY(requester_id) REFERENCES users(id)    ON DELETE CASCADE,
+    CONSTRAINT          FK_REQUEST_TO_CATEGORY FOREIGN KEY(event_id)  REFERENCES event(id) ON DELETE CASCADE
+
+);
