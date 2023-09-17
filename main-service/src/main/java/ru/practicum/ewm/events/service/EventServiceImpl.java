@@ -171,7 +171,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventFullDto> getListEventByParams(ParamsSortDto paramsSortDto) {
         Pageable pageable = ConverterPage.getPageRequest(paramsSortDto.getFrom(),
-                paramsSortDto.getSize(), Optional.empty());
+                paramsSortDto.getSize(), Optional.of(DEFAULT_SORT_BY_ID));
         log.debug("Params Sort came by admin [params={}] and pages {}", paramsSortDto, SERVICE_FROM_CONTROLLER);
 
         LocalDateTime rangeStart;

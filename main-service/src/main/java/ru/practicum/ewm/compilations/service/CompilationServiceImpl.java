@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static ru.practicum.ewm.constants.CommonSort.DEFAULT_SORT_BY_ID;
 import static ru.practicum.ewm.constants.NamesExceptions.DUPLICATE_TITLE;
 import static ru.practicum.ewm.constants.NamesLogsInService.*;
 
@@ -136,7 +137,7 @@ public class CompilationServiceImpl implements CompilationService {
     public List<CompilationDto> getCompilationsByPage(Boolean pinned, Integer from, Integer size) {
         log.debug("Get all Compilation by pages {}", SERVICE_IN_DB);
 
-        Pageable pageable = ConverterPage.getPageRequest(from, size, Optional.empty());
+        Pageable pageable = ConverterPage.getPageRequest(from, size, Optional.of(DEFAULT_SORT_BY_ID));
         List<CompilationEntity> listCompilations = compilationRepository.findAllByPinned(pinned, pageable);
 
         if (listCompilations.isEmpty()) {
