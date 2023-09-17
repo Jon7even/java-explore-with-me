@@ -26,7 +26,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.practicum.ewm.constants.NamesExceptions.DUPLICATE_TITLE;
-import static ru.practicum.ewm.constants.NamesExceptions.EVENTS_NOT_EXIST;
 import static ru.practicum.ewm.constants.NamesLogsInService.*;
 
 @Slf4j
