@@ -48,7 +48,7 @@ public class CompilationServiceImpl implements CompilationService {
                 foundEvents.size(), foundEvents, SERVICE_FROM_DB);
 
         if (foundEvents.isEmpty()) {
-            throw new IntegrityConstraintException(EVENTS_NOT_EXIST);
+            log.debug("List events for compilation is empty");
         }
 
         CompilationEntity compilationEntity = CompilationMapper.INSTANCE.toEntityFromDTOCreate(
@@ -100,7 +100,7 @@ public class CompilationServiceImpl implements CompilationService {
                 List<EventEntity> eventsForUpdate = eventRepository.findAllById(updateCompilationRequest.getEvents());
                 log.debug("Found [count={}] events for update compilation: {} {}",
                         eventsForUpdate.size(), eventsForUpdate, SERVICE_FROM_DB);
-                compilation.setEvents(eventsForUpdate);
+                compilationForUpdate.setEvents(eventsForUpdate);
             } else {
                 log.debug("List of events to update is empty");
             }

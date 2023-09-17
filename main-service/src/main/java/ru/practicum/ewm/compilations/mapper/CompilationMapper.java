@@ -28,7 +28,7 @@ public interface CompilationMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    @Mapping(source = "compilation.events", target = "events")
+    @Mapping(target = "events", ignore = true)
     @Mapping(source = "compilation.pinned", target = "pinned")
     @Mapping(source = "compilation.title", target = "title")
     void updateEntityFromEntityForUpdate(CompilationEntity compilation,
