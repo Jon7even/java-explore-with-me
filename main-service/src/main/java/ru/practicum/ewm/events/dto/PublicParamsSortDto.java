@@ -8,7 +8,6 @@ import lombok.ToString;
 import ru.practicum.ewm.events.model.EventSort;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,10 +19,8 @@ import static ru.practicum.ewm.constants.DateTimeFormat.DATE_TIME_DEFAULT;
 @ToString
 @AllArgsConstructor
 public class PublicParamsSortDto {
-    @NotNull
     private final String text;
 
-    @NotNull
     private final List<Integer> categories;
 
     private final Boolean paid;
@@ -36,18 +33,13 @@ public class PublicParamsSortDto {
     @JsonFormat(pattern = DATE_TIME_DEFAULT)
     private LocalDateTime rangeEnd = LocalDateTime.now().plusMonths(DEFAULT_MONTHS_COUNT);
 
-    @NotNull
     private final Boolean onlyAvailable;
 
-    @NotNull
     private final EventSort sort;
 
-    @NotNull
     private final Integer from;
 
-    @NotNull
     private final Integer size;
 
-    @NotNull
     private final HttpServletRequest request;
 }
