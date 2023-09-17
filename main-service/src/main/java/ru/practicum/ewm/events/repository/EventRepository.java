@@ -52,7 +52,9 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "  AND (COALESCE(:categories, NULL)   IS NULL OR ev.category.id IN (:categories) ) " +
             "  AND (COALESCE(:text, NULL)         IS NULL OR " +
             "                      (LOWER (ev.annotation) LIKE LOWER(concat('%', :text, '%')) " +
-            "                           OR LOWER (ev.description) LIKE LOWER(concat('%', :text, '%'))  ) )")
+            "                           OR LOWER (ev.description) LIKE LOWER(concat('%', :text, '%'))  ) ) " +
+            "  AND ev.participantLimit = 0 " +
+            "      OR ev.participantLimit <= ev.confirmedRequests")
     List<EventEntity> findEventsOnlyAvailableByParamsAndPageable(@Param("state") EventState state,
                                                                  @Param("text") String text,
                                                                  @Param("categories") List<Integer> categories,
@@ -73,9 +75,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "  AND ( (:categories) IS NULL OR ( (:categories) IS NOT NULL AND ev.category.id IN (:categories) ) ) " +
             "  AND ( :text         IS NULL OR ( :text         IS NOT NULL AND " +
             "                      LOWER (ev.annotation) LIKE LOWER(concat('%', :text, '%')) " +
-            "                           OR LOWER (ev.description) LIKE LOWER(concat('%', :text, '%'))  ) ) " +
-            "  AND ev.participantLimit = 0 " +
-            "      OR ev.participantLimit <= ev.confirmedRequests")
+            "                           OR LOWER (ev.description) LIKE LOWER(concat('%', :text, '%'))  ) )")
     List<EventEntity> findEventsByParamsAndPageable(@Param("state") EventState state,
                                                     @Param("text") String text,
                                                     @Param("categories") List<Integer> categories,
@@ -83,5 +83,4 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
                                                     @Param("rangeStart") LocalDateTime rangeStart,
                                                     @Param("rangeEnd") LocalDateTime rangeEnd,
                                                     Pageable pageable);
-
 }

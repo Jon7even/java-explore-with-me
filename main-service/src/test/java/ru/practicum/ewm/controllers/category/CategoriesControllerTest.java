@@ -143,6 +143,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
                 .andExpect(jsonPath("name").value(firstNewCategoryDto.getName()));
         firstNewCategoryDto.setName("UpdatedCategory");
 
+        firstNewCategoryDto.setName("Set new name");
         mockMvc.perform(patch("/admin/categories/{catId}", firstIdInteger)
                         .content(objectMapper.writeValueAsString(firstNewCategoryDto))
                         .contentType(MediaType.APPLICATION_JSON))

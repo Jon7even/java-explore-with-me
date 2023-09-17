@@ -30,13 +30,13 @@ public class EventPublicController {
 
     @GetMapping
     public ResponseEntity<List<EventShortDto>> getShortListByParams(
-            @RequestParam(defaultValue = "") String text,
-            @RequestParam(defaultValue = "#{T(java.util.Collections).emptyList()}") List<Integer> categories,
+            @RequestParam(required = false) String text,
+            @RequestParam(required = false) List<Integer> categories,
             @RequestParam(required = false) Boolean paid,
             @RequestParam(required = false) @DateTimeFormat(pattern = DATE_TIME_DEFAULT) LocalDateTime rangeStart,
             @RequestParam(required = false) @DateTimeFormat(pattern = DATE_TIME_DEFAULT) LocalDateTime rangeEnd,
             @RequestParam(defaultValue = "false") Boolean onlyAvailable,
-            @RequestParam(defaultValue = "EVENT_DATE") EventSort sort,
+            @RequestParam(required = false) EventSort sort,
             @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
             @Positive @RequestParam(name = "size", defaultValue = "10") Integer size,
             HttpServletRequest request) {
