@@ -26,8 +26,8 @@ public class EventAdminControllerTest extends GenericControllerEvents {
     @Test
     @DisplayName("Подтвердить или отклонить событие админом и получить full DTO [confirm]")
     void shouldConfirmOrRejectEventByAdmin_thenStatus200and404and409() throws Exception {
-        EventFullDto event1 = eventService.createEvent(newEventDtoFieldsDefault, FIRST_ID);
-        eventService.createEvent(newEventDtoStandard, FIRST_ID);
+        EventFullDto event1 = eventService.createEvent(newEventDtoFieldsDefault, firstId);
+        eventService.createEvent(newEventDtoStandard, firstId);
 
         UpdateEventAdminRequest eventDTOConfirm = UpdateEventAdminRequest.builder()
                 .annotation("This path confirm for Test")
@@ -41,7 +41,7 @@ public class EventAdminControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("title").value(event1.getTitle()));
 
         categoryService.createCategory(secondNewCategoryDto);
-        eventDTOConfirm.setCategory(SECOND_ID_INTEGER);
+        eventDTOConfirm.setCategory(secondIdInteger);
         mockMvc.perform(patch(EVENT_ADMIN + "/{eventId}", event1.getId())
                         .content(objectMapper.writeValueAsString(eventDTOConfirm))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -101,7 +101,7 @@ public class EventAdminControllerTest extends GenericControllerEvents {
 
         eventDTOConfirm.setEventDate(now.plusDays(1));
         eventDTOConfirm.setStateAction(SEND_TO_REVIEW);
-        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", FIRST_ID, event1.getId())
+        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", firstId, event1.getId())
                         .content(objectMapper.writeValueAsString(eventDTOConfirm))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -128,11 +128,11 @@ public class EventAdminControllerTest extends GenericControllerEvents {
     @Test
     @DisplayName("Получить админом список событий по выборке [getShortListByUserId]")
     void shouldGetPageableFullListEventByAdminAndParamsSorts_thenStatus200and409() throws Exception {
-        eventService.createEvent(newEventDtoStandard, FIRST_ID);
-        eventService.createEvent(newEventDtoRequestModerationFalse, FIRST_ID);
-        eventService.createEvent(newEventDtoFieldsDefault, SECOND_ID);
-        eventService.createEvent(newEventDtoPaidTrue, SECOND_ID);
-        eventService.createEvent(newEventDtoParticipantLimitTen, SECOND_ID);
+        eventService.createEvent(newEventDtoStandard, firstId);
+        eventService.createEvent(newEventDtoRequestModerationFalse, firstId);
+        eventService.createEvent(newEventDtoFieldsDefault, secondId);
+        eventService.createEvent(newEventDtoPaidTrue, secondId);
+        eventService.createEvent(newEventDtoParticipantLimitTen, secondId);
 
         mockMvc.perform(get(EVENT_ADMIN)
                         .param("rangeStart", LocalDateTime.now().plusHours(1)
@@ -149,11 +149,11 @@ public class EventAdminControllerTest extends GenericControllerEvents {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
 
-        mockMvc.perform(get(EVENT_PRIVATE, FIRST_ID))
+        mockMvc.perform(get(EVENT_PRIVATE, firstId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
 
-        mockMvc.perform(get(EVENT_PRIVATE, SECOND_ID))
+        mockMvc.perform(get(EVENT_PRIVATE, secondId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)));
 

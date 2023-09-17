@@ -34,7 +34,7 @@ public class UserAdminControllerTest extends GenericControllerTest {
                         .content(objectMapper.writeValueAsString(firstNewUserRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").value(FIRST_ID))
+                .andExpect(jsonPath("id").value(firstId))
                 .andExpect(jsonPath("email").value(firstNewUserRequest.getEmail()))
                 .andExpect(jsonPath("name").value(firstNewUserRequest.getName()));
     }
@@ -81,12 +81,12 @@ public class UserAdminControllerTest extends GenericControllerTest {
         userService.createUser(firstNewUserRequest);
         Long idFirstUser = userService.getUsersByListId(Collections.emptyList(), 0, 10).get(0).getId();
 
-        mockMvc.perform(delete("/admin/users/{id}", SECOND_ID))
+        mockMvc.perform(delete("/admin/users/{id}", secondId))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("status").value("NOT_FOUND"))
                 .andExpect(jsonPath("reason").value("The required object was not found."))
                 .andExpect(jsonPath("message")
-                        .value("User with id=" + SECOND_ID + " was not found"))
+                        .value("User with id=" + secondId + " was not found"))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
         mockMvc.perform(delete("/admin/users/{id}", idFirstUser))

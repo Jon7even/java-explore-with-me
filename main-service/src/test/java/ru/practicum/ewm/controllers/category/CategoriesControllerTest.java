@@ -45,7 +45,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
                         .content(objectMapper.writeValueAsString(firstNewCategoryDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").value(FIRST_ID_INTEGER))
+                .andExpect(jsonPath("id").value(firstIdInteger))
                 .andExpect(jsonPath("name").value(firstNewCategoryDto.getName()));
     }
 
@@ -89,14 +89,14 @@ public class CategoriesControllerTest extends GenericControllerTest {
     @DisplayName("Категория должна удалиться по [ID] [removeCategoryById]")
     void shouldDeleteCategoryById_thenStatus204And404And409() throws Exception {
         categoryService.createCategory(firstNewCategoryDto);
-        Integer idFirstCategory = categoryService.getCategoryById(FIRST_ID_INTEGER).getId();
+        Integer idFirstCategory = categoryService.getCategoryById(firstIdInteger).getId();
 
-        mockMvc.perform(delete("/admin/categories/{catId}", SECOND_ID_INTEGER))
+        mockMvc.perform(delete("/admin/categories/{catId}", secondIdInteger))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("status").value("NOT_FOUND"))
                 .andExpect(jsonPath("reason").value("The required object was not found."))
                 .andExpect(jsonPath("message")
-                        .value("Category with id=" + SECOND_ID_INTEGER + " was not found"))
+                        .value("Category with id=" + secondIdInteger + " was not found"))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
         mockMvc.perform(delete("/admin/categories/{catId}", idFirstCategory))
@@ -114,14 +114,14 @@ public class CategoriesControllerTest extends GenericControllerTest {
                 .build();
         NewEventDto newEventDtoFieldsDefault = NewEventDto.builder()
                 .annotation("Test annotation for annotation Default")
-                .category(SECOND_ID_INTEGER)
+                .category(secondIdInteger)
                 .description("Test description for description Default")
                 .eventDate(LocalDateTime.now().plusMonths(1))
                 .location(location)
                 .title("Test Title Default")
                 .build();
-        eventService.createEvent(newEventDtoFieldsDefault, FIRST_ID);
-        mockMvc.perform(delete("/admin/categories/{catId}", SECOND_ID))
+        eventService.createEvent(newEventDtoFieldsDefault, firstId);
+        mockMvc.perform(delete("/admin/categories/{catId}", secondId))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("status").value("CONFLICT"))
                 .andExpect(jsonPath("reason").value("Integrity constraint has been violated."))
@@ -135,19 +135,19 @@ public class CategoriesControllerTest extends GenericControllerTest {
         categoryService.createCategory(firstNewCategoryDto);
 
         firstNewCategoryDto.setName("UpdatedCategory");
-        mockMvc.perform(patch("/admin/categories/{catId}", FIRST_ID_INTEGER)
+        mockMvc.perform(patch("/admin/categories/{catId}", firstIdInteger)
                         .content(objectMapper.writeValueAsString(firstNewCategoryDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(FIRST_ID_INTEGER))
+                .andExpect(jsonPath("id").value(firstIdInteger))
                 .andExpect(jsonPath("name").value(firstNewCategoryDto.getName()));
         firstNewCategoryDto.setName("UpdatedCategory");
 
-        mockMvc.perform(patch("/admin/categories/{catId}", FIRST_ID_INTEGER)
+        mockMvc.perform(patch("/admin/categories/{catId}", firstIdInteger)
                         .content(objectMapper.writeValueAsString(firstNewCategoryDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(FIRST_ID_INTEGER))
+                .andExpect(jsonPath("id").value(firstIdInteger))
                 .andExpect(jsonPath("name").value(firstNewCategoryDto.getName()));
     }
 
@@ -180,17 +180,17 @@ public class CategoriesControllerTest extends GenericControllerTest {
     void shouldGetCategoryById_thenStatus200AndStatus404() throws Exception {
         categoryService.createCategory(firstNewCategoryDto);
 
-        mockMvc.perform(get("/categories/{id}", FIRST_ID_INTEGER))
+        mockMvc.perform(get("/categories/{id}", firstIdInteger))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(FIRST_ID_INTEGER))
+                .andExpect(jsonPath("id").value(firstIdInteger))
                 .andExpect(jsonPath("name").value(firstNewCategoryDto.getName()));
 
-        mockMvc.perform(get("/categories/{id}", SECOND_ID_INTEGER))
+        mockMvc.perform(get("/categories/{id}", secondIdInteger))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("status").value("NOT_FOUND"))
                 .andExpect(jsonPath("reason").value("The required object was not found."))
                 .andExpect(jsonPath("message")
-                        .value("Category with id=" + SECOND_ID_INTEGER + " was not found"))
+                        .value("Category with id=" + secondIdInteger + " was not found"))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
     }
 

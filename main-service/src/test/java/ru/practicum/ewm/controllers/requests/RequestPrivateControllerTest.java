@@ -3,7 +3,6 @@ package ru.practicum.ewm.controllers.requests;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import ru.practicum.ewm.events.dto.EventFullDto;
 import ru.practicum.ewm.events.dto.UpdateEventAdminRequest;
 import ru.practicum.ewm.events.model.EventState;
 import ru.practicum.ewm.requests.dto.EventRequestStatusUpdateRequest;
@@ -25,13 +24,13 @@ public class RequestPrivateControllerTest extends GenericControllerEvents {
     @Test
     @DisplayName("Добавить запрос на участие в событии и принять/отклонить его [confirmRequestByInitiator]")
     void shouldCreateRequestAndConfirmAndReject_thenStatus200and409() throws Exception {
-        eventService.createEvent(newEventDtoFieldsDefault, FIRST_ID);
-        eventService.createEvent(newEventDtoParticipantLimitTen, FIRST_ID);
+        eventService.createEvent(newEventDtoFieldsDefault, firstId);
+        eventService.createEvent(newEventDtoParticipantLimitTen, firstId);
         newEventDtoParticipantLimitTen.setParticipantLimit(1);
-        eventService.createEvent(newEventDtoParticipantLimitTen, FIRST_ID);
+        eventService.createEvent(newEventDtoParticipantLimitTen, firstId);
 
-        mockMvc.perform(post(REQUEST_PRIVATE, FIRST_ID)
-                        .param("eventId", String.valueOf(FIRST_ID))
+        mockMvc.perform(post(REQUEST_PRIVATE, firstId)
+                        .param("eventId", String.valueOf(firstId))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("status").value("CONFLICT"))
@@ -42,10 +41,10 @@ public class RequestPrivateControllerTest extends GenericControllerEvents {
         UpdateEventAdminRequest eventDTOConfirm = UpdateEventAdminRequest.builder()
                 .stateAction(EventState.PUBLISH_EVENT)
                 .build();
-        eventService.confirmEvent(FIRST_ID, eventDTOConfirm);
+        eventService.confirmEvent(firstId, eventDTOConfirm);
 
-        mockMvc.perform(post(REQUEST_PRIVATE, FIRST_ID)
-                        .param("eventId", String.valueOf(FIRST_ID))
+        mockMvc.perform(post(REQUEST_PRIVATE, firstId)
+                        .param("eventId", String.valueOf(firstId))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("status").value("CONFLICT"))
@@ -53,21 +52,21 @@ public class RequestPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("message").value(REJECTED_REQUEST_INITIATOR))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
-        mockMvc.perform(post(REQUEST_PRIVATE, SECOND_ID)
-                        .param("eventId", String.valueOf(FIRST_ID))
+        mockMvc.perform(post(REQUEST_PRIVATE, secondId)
+                        .param("eventId", String.valueOf(firstId))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("status").value(RequestStatus.CONFIRMED.toString()));
 
-        eventService.confirmEvent(SECOND_ID, eventDTOConfirm);
-        mockMvc.perform(post(REQUEST_PRIVATE, SECOND_ID)
-                        .param("eventId", String.valueOf(SECOND_ID))
+        eventService.confirmEvent(secondId, eventDTOConfirm);
+        mockMvc.perform(post(REQUEST_PRIVATE, secondId)
+                        .param("eventId", String.valueOf(secondId))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("status").value(RequestStatus.PENDING.toString()));
 
-        mockMvc.perform(post(REQUEST_PRIVATE, SECOND_ID)
-                        .param("eventId", String.valueOf(SECOND_ID))
+        mockMvc.perform(post(REQUEST_PRIVATE, secondId)
+                        .param("eventId", String.valueOf(secondId))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("status").value("CONFLICT"))
@@ -76,11 +75,11 @@ public class RequestPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
         EventRequestStatusUpdateRequest patchDto = EventRequestStatusUpdateRequest.builder()
-                .requestIds(List.of(FIRST_ID))
+                .requestIds(List.of(firstId))
                 .status(RequestStatus.REJECTED)
                 .build();
 
-        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}/requests", FIRST_ID, FIRST_ID)
+        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}/requests", firstId, firstId)
                         .content(objectMapper.writeValueAsString(patchDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict())
@@ -89,23 +88,23 @@ public class RequestPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("message").value(CONFIRM_NOT_REQUIRED))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
-        patchDto.setRequestIds(List.of(SECOND_ID));
-        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}/requests", FIRST_ID, SECOND_ID)
+        patchDto.setRequestIds(List.of(secondId));
+        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}/requests", firstId, secondId)
                         .content(objectMapper.writeValueAsString(patchDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rejectedRequests.[0].status").value(RequestStatus.REJECTED.toString()));
 
-        eventService.confirmEvent((SECOND_ID + 1L), eventDTOConfirm);
-        mockMvc.perform(post(REQUEST_PRIVATE, SECOND_ID)
-                        .param("eventId", String.valueOf(SECOND_ID + 1L))
+        eventService.confirmEvent((secondId + 1L), eventDTOConfirm);
+        mockMvc.perform(post(REQUEST_PRIVATE, secondId)
+                        .param("eventId", String.valueOf(secondId + 1L))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("status").value(RequestStatus.PENDING.toString()));
 
-        patchDto.setRequestIds(List.of((SECOND_ID + 1)));
+        patchDto.setRequestIds(List.of((secondId + 1)));
         patchDto.setStatus(RequestStatus.CONFIRMED);
-        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}/requests", FIRST_ID, 3L)
+        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}/requests", firstId, 3L)
                         .content(objectMapper.writeValueAsString(patchDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -113,7 +112,7 @@ public class RequestPrivateControllerTest extends GenericControllerEvents {
                         RequestStatus.CONFIRMED.toString())
                 );
 
-        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}/requests", FIRST_ID, 3L)
+        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}/requests", firstId, 3L)
                         .content(objectMapper.writeValueAsString(patchDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict())

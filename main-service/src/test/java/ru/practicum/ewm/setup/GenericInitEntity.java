@@ -4,13 +4,13 @@ import ru.practicum.ewm.category.dto.NewCategoryDto;
 import ru.practicum.ewm.users.dto.NewUserRequest;
 
 public class GenericInitEntity {
-    protected Long FIRST_ID = 1L;
+    protected Long firstId = 1L;
 
-    protected Long SECOND_ID = 2L;
+    protected Long secondId = 2L;
 
-    protected Integer FIRST_ID_INTEGER = 1;
+    protected Integer firstIdInteger = 1;
 
-    protected Integer SECOND_ID_INTEGER = 2;
+    protected Integer secondIdInteger = 2;
 
     protected NewUserRequest firstNewUserRequest;
 

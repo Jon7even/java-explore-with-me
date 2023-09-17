@@ -24,18 +24,18 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
     @Test
     @DisplayName("Новое событие должно успешно создаться с разными DTO [create]")
     void shouldCreateEvents_thenStatus201() throws Exception {
-        mockMvc.perform(post(EVENT_PRIVATE, FIRST_ID)
+        mockMvc.perform(post(EVENT_PRIVATE, firstId)
                         .content(objectMapper.writeValueAsString(newEventDtoStandard))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").value(FIRST_ID))
+                .andExpect(jsonPath("id").value(firstId))
                 .andExpect(jsonPath("annotation").value(newEventDtoStandard.getAnnotation()))
                 .andExpect(jsonPath("confirmedRequests").value(zero))
                 .andExpect(jsonPath("createdOn").value(notNullValue()))
                 .andExpect(jsonPath("description").value(newEventDtoStandard.getDescription()))
                 .andExpect(jsonPath("eventDate").value(
                         newEventDtoStandard.getEventDate().format(DateTimeFormatter.ofPattern(DATE_TIME_DEFAULT))))
-                .andExpect(jsonPath("initiator.id").value(FIRST_ID))
+                .andExpect(jsonPath("initiator.id").value(firstId))
                 .andExpect(jsonPath("location.lat").value(location.getLat()))
                 .andExpect(jsonPath("location.lon").value(location.getLon()))
                 .andExpect(jsonPath("paid").value(false))
@@ -46,18 +46,18 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("title").value(newEventDtoStandard.getTitle()))
                 .andExpect(jsonPath("views").value(zero));
 
-        mockMvc.perform(post(EVENT_PRIVATE, FIRST_ID)
+        mockMvc.perform(post(EVENT_PRIVATE, firstId)
                         .content(objectMapper.writeValueAsString(newEventDtoRequestModerationFalse))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").value(SECOND_ID))
+                .andExpect(jsonPath("id").value(secondId))
                 .andExpect(jsonPath("annotation").value(newEventDtoRequestModerationFalse.getAnnotation()))
                 .andExpect(jsonPath("confirmedRequests").value(zero))
                 .andExpect(jsonPath("createdOn").value(notNullValue()))
                 .andExpect(jsonPath("description").value(newEventDtoRequestModerationFalse.getDescription()))
                 .andExpect(jsonPath("eventDate").value(newEventDtoRequestModerationFalse.getEventDate()
                         .format(DateTimeFormatter.ofPattern(DATE_TIME_DEFAULT))))
-                .andExpect(jsonPath("initiator.id").value(FIRST_ID))
+                .andExpect(jsonPath("initiator.id").value(firstId))
                 .andExpect(jsonPath("location.lat").value(location.getLat()))
                 .andExpect(jsonPath("location.lon").value(location.getLon()))
                 .andExpect(jsonPath("paid").value(false))
@@ -69,18 +69,18 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("title").value(newEventDtoRequestModerationFalse.getTitle()))
                 .andExpect(jsonPath("views").value(zero));
 
-        mockMvc.perform(post(EVENT_PRIVATE, FIRST_ID)
+        mockMvc.perform(post(EVENT_PRIVATE, firstId)
                         .content(objectMapper.writeValueAsString(newEventDtoParticipantLimitTen))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").value(SECOND_ID + 1))
+                .andExpect(jsonPath("id").value(secondId + 1))
                 .andExpect(jsonPath("annotation").value(newEventDtoParticipantLimitTen.getAnnotation()))
                 .andExpect(jsonPath("confirmedRequests").value(zero))
                 .andExpect(jsonPath("createdOn").value(notNullValue()))
                 .andExpect(jsonPath("description").value(newEventDtoParticipantLimitTen.getDescription()))
                 .andExpect(jsonPath("eventDate").value(newEventDtoParticipantLimitTen.getEventDate()
                         .format(DateTimeFormatter.ofPattern(DATE_TIME_DEFAULT))))
-                .andExpect(jsonPath("initiator.id").value(FIRST_ID))
+                .andExpect(jsonPath("initiator.id").value(firstId))
                 .andExpect(jsonPath("location.lat").value(location.getLat()))
                 .andExpect(jsonPath("location.lon").value(location.getLon()))
                 .andExpect(jsonPath("paid").value(false))
@@ -92,18 +92,18 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("title").value(newEventDtoParticipantLimitTen.getTitle()))
                 .andExpect(jsonPath("views").value(zero));
 
-        mockMvc.perform(post(EVENT_PRIVATE, FIRST_ID)
+        mockMvc.perform(post(EVENT_PRIVATE, firstId)
                         .content(objectMapper.writeValueAsString(newEventDtoPaidTrue))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").value(SECOND_ID + 2))
+                .andExpect(jsonPath("id").value(secondId + 2))
                 .andExpect(jsonPath("annotation").value(newEventDtoPaidTrue.getAnnotation()))
                 .andExpect(jsonPath("confirmedRequests").value(zero))
                 .andExpect(jsonPath("createdOn").value(notNullValue()))
                 .andExpect(jsonPath("description").value(newEventDtoPaidTrue.getDescription()))
                 .andExpect(jsonPath("eventDate").value(newEventDtoPaidTrue.getEventDate()
                         .format(DateTimeFormatter.ofPattern(DATE_TIME_DEFAULT))))
-                .andExpect(jsonPath("initiator.id").value(FIRST_ID))
+                .andExpect(jsonPath("initiator.id").value(firstId))
                 .andExpect(jsonPath("location.lat").value(location.getLat()))
                 .andExpect(jsonPath("location.lon").value(location.getLon()))
                 .andExpect(jsonPath("paid").value(newEventDtoPaidTrue.getPaid()))
@@ -115,18 +115,18 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("title").value(newEventDtoPaidTrue.getTitle()))
                 .andExpect(jsonPath("views").value(zero));
 
-        mockMvc.perform(post(EVENT_PRIVATE, FIRST_ID)
+        mockMvc.perform(post(EVENT_PRIVATE, firstId)
                         .content(objectMapper.writeValueAsString(newEventDtoFieldsDefault))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").value(SECOND_ID + 3))
+                .andExpect(jsonPath("id").value(secondId + 3))
                 .andExpect(jsonPath("annotation").value(newEventDtoFieldsDefault.getAnnotation()))
                 .andExpect(jsonPath("confirmedRequests").value(zero))
                 .andExpect(jsonPath("createdOn").value(notNullValue()))
                 .andExpect(jsonPath("description").value(newEventDtoFieldsDefault.getDescription()))
                 .andExpect(jsonPath("eventDate").value(newEventDtoFieldsDefault.getEventDate()
                         .format(DateTimeFormatter.ofPattern(DATE_TIME_DEFAULT))))
-                .andExpect(jsonPath("initiator.id").value(FIRST_ID))
+                .andExpect(jsonPath("initiator.id").value(firstId))
                 .andExpect(jsonPath("location.lat").value(location.getLat()))
                 .andExpect(jsonPath("location.lon").value(location.getLon()))
                 .andExpect(jsonPath("paid").value(DEFAULT_FIELD_PAID))
@@ -142,7 +142,7 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
     @DisplayName("Новое событие не должно создаться [create]")
     void shouldNotCreateEvent_thenStatus400And404() throws Exception {
         newEventDtoParticipantLimitTen.setEventDate(LocalDateTime.now());
-        mockMvc.perform(post(EVENT_PRIVATE, FIRST_ID)
+        mockMvc.perform(post(EVENT_PRIVATE, firstId)
                         .content(objectMapper.writeValueAsString(newEventDtoParticipantLimitTen))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -152,7 +152,7 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
         newEventDtoFieldsDefault.setAnnotation("testtest");
-        mockMvc.perform(post(EVENT_PRIVATE, FIRST_ID)
+        mockMvc.perform(post(EVENT_PRIVATE, firstId)
                         .content(objectMapper.writeValueAsString(newEventDtoFieldsDefault))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -163,7 +163,7 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
         newEventDtoPaidTrue.setLocation(null);
-        mockMvc.perform(post(EVENT_PRIVATE, FIRST_ID)
+        mockMvc.perform(post(EVENT_PRIVATE, firstId)
                         .content(objectMapper.writeValueAsString(newEventDtoPaidTrue))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -173,36 +173,36 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                         .value("Field: location. Error: must not be null. Value: null"))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
-        newEventDtoRequestModerationFalse.setCategory(SECOND_ID_INTEGER);
-        mockMvc.perform(post(EVENT_PRIVATE, SECOND_ID)
+        newEventDtoRequestModerationFalse.setCategory(secondIdInteger);
+        mockMvc.perform(post(EVENT_PRIVATE, secondId)
                         .content(objectMapper.writeValueAsString(newEventDtoRequestModerationFalse))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("status").value("NOT_FOUND"))
                 .andExpect(jsonPath("reason").value("The required object was not found."))
                 .andExpect(jsonPath("message")
-                        .value("Category with id=" + SECOND_ID_INTEGER + " was not found"))
+                        .value("Category with id=" + secondIdInteger + " was not found"))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
-        mockMvc.perform(post(EVENT_PRIVATE, SECOND_ID + 1)
+        mockMvc.perform(post(EVENT_PRIVATE, secondId + 1)
                         .content(objectMapper.writeValueAsString(newEventDtoStandard))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("status").value("NOT_FOUND"))
                 .andExpect(jsonPath("reason").value("The required object was not found."))
                 .andExpect(jsonPath("message")
-                        .value("User with id=" + (SECOND_ID + 1) + " was not found"))
+                        .value("User with id=" + (secondId + 1) + " was not found"))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
     }
 
     @Test
     @DisplayName("Получить владельцем урезанную DTO списка событий со страницами [getShortListByUserId]")
     void shouldGetPageableShortListEventByInitiator_thenStatus200() throws Exception {
-        EventFullDto event1 = eventService.createEvent(newEventDtoStandard, FIRST_ID);
-        EventFullDto event2 = eventService.createEvent(newEventDtoRequestModerationFalse, FIRST_ID);
-        EventFullDto event3 = eventService.createEvent(newEventDtoFieldsDefault, SECOND_ID);
+        EventFullDto event1 = eventService.createEvent(newEventDtoStandard, firstId);
+        EventFullDto event2 = eventService.createEvent(newEventDtoRequestModerationFalse, firstId);
+        EventFullDto event3 = eventService.createEvent(newEventDtoFieldsDefault, secondId);
 
-        mockMvc.perform(get(EVENT_PRIVATE, FIRST_ID))
+        mockMvc.perform(get(EVENT_PRIVATE, firstId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id").value(event1.getId()))
@@ -210,7 +210,7 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("$[1].id").value(event2.getId()))
                 .andExpect(jsonPath("$[1].annotation").value(event2.getAnnotation()));
 
-        mockMvc.perform(get(EVENT_PRIVATE, FIRST_ID)
+        mockMvc.perform(get(EVENT_PRIVATE, firstId)
                         .param("from", "0")
                         .param("size", "1"))
                 .andExpect(status().isOk())
@@ -218,7 +218,7 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("$[0].id").value(event1.getId()))
                 .andExpect(jsonPath("$[0].annotation").value(event1.getAnnotation()));
 
-        mockMvc.perform(get(EVENT_PRIVATE, SECOND_ID))
+        mockMvc.perform(get(EVENT_PRIVATE, secondId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(event3.getId()))
@@ -228,10 +228,10 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
     @Test
     @DisplayName("Получить владельцем full DTO события по id [getFullById]")
     void shouldGetEventByInitiator_thenStatus200and404() throws Exception {
-        EventFullDto event1 = eventService.createEvent(newEventDtoStandard, FIRST_ID);
-        eventService.createEvent(newEventDtoRequestModerationFalse, FIRST_ID);
+        EventFullDto event1 = eventService.createEvent(newEventDtoStandard, firstId);
+        eventService.createEvent(newEventDtoRequestModerationFalse, firstId);
 
-        mockMvc.perform(get(EVENT_PRIVATE + "/{eventId}", FIRST_ID, event1.getId()))
+        mockMvc.perform(get(EVENT_PRIVATE + "/{eventId}", firstId, event1.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id").value(event1.getId()))
                 .andExpect(jsonPath("annotation").value(event1.getAnnotation()))
@@ -251,17 +251,17 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("title").value(event1.getTitle()))
                 .andExpect(jsonPath("views").value(event1.getViews()));
 
-        mockMvc.perform(get(EVENT_PRIVATE + "/{eventId}", (SECOND_ID + 1), event1.getId())
+        mockMvc.perform(get(EVENT_PRIVATE + "/{eventId}", (secondId + 1), event1.getId())
                         .content(objectMapper.writeValueAsString(newEventDtoStandard))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("status").value("NOT_FOUND"))
                 .andExpect(jsonPath("reason").value("The required object was not found."))
                 .andExpect(jsonPath("message")
-                        .value("User with id=" + (SECOND_ID + 1) + " was not found"))
+                        .value("User with id=" + (secondId + 1) + " was not found"))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
-        mockMvc.perform(get(EVENT_PRIVATE + "/{eventId}", SECOND_ID, event1.getId())
+        mockMvc.perform(get(EVENT_PRIVATE + "/{eventId}", secondId, event1.getId())
                         .content(objectMapper.writeValueAsString(newEventDtoStandard))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -271,7 +271,7 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                         .value("Event with id=" + event1.getId() + " was not found"))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
-        mockMvc.perform(get(EVENT_PRIVATE + "/{eventId}", FIRST_ID, 3L)
+        mockMvc.perform(get(EVENT_PRIVATE + "/{eventId}", firstId, 3L)
                         .content(objectMapper.writeValueAsString(newEventDtoStandard))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -285,14 +285,14 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
     @Test
     @DisplayName("Обновить событие владельцем и получить full DTO [updateById]")
     void shouldUpdateEventByInitiatorId_thenStatus200And404() throws Exception {
-        EventFullDto event1 = eventService.createEvent(newEventDtoFieldsDefault, FIRST_ID);
-        eventService.createEvent(newEventDtoStandard, FIRST_ID);
+        EventFullDto event1 = eventService.createEvent(newEventDtoFieldsDefault, firstId);
+        eventService.createEvent(newEventDtoStandard, firstId);
 
         UpdateEventUserRequest eventDTOUpdate = UpdateEventUserRequest.builder()
                 .annotation("This path update for Test")
                 .build();
 
-        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", FIRST_ID, event1.getId())
+        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", firstId, event1.getId())
                         .content(objectMapper.writeValueAsString(eventDTOUpdate))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -300,8 +300,8 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("title").value(event1.getTitle()));
 
         categoryService.createCategory(secondNewCategoryDto);
-        eventDTOUpdate.setCategory(SECOND_ID_INTEGER);
-        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", FIRST_ID, event1.getId())
+        eventDTOUpdate.setCategory(secondIdInteger);
+        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", firstId, event1.getId())
                         .content(objectMapper.writeValueAsString(eventDTOUpdate))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -309,7 +309,7 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("title").value(event1.getTitle()));
 
         eventDTOUpdate.setDescription("This path update for Test Description");
-        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", FIRST_ID, event1.getId())
+        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", firstId, event1.getId())
                         .content(objectMapper.writeValueAsString(eventDTOUpdate))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -317,7 +317,7 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("title").value(event1.getTitle()));
 
         eventDTOUpdate.setEventDate(now.plusDays(1));
-        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", FIRST_ID, event1.getId())
+        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", firstId, event1.getId())
                         .content(objectMapper.writeValueAsString(eventDTOUpdate))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -326,7 +326,7 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("title").value(event1.getTitle()));
 
         eventDTOUpdate.setRequestModeration(false);
-        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", FIRST_ID, event1.getId())
+        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", firstId, event1.getId())
                         .content(objectMapper.writeValueAsString(eventDTOUpdate))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -334,7 +334,7 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("title").value(event1.getTitle()));
 
         eventDTOUpdate.setStateAction(SEND_TO_REVIEW);
-        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", FIRST_ID, event1.getId())
+        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", firstId, event1.getId())
                         .content(objectMapper.writeValueAsString(eventDTOUpdate))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -342,21 +342,21 @@ public class EventPrivateControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("title").value(event1.getTitle()));
 
         eventDTOUpdate.setTitle("This path update for Test Title");
-        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", FIRST_ID, event1.getId())
+        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", firstId, event1.getId())
                         .content(objectMapper.writeValueAsString(eventDTOUpdate))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("title").value(eventDTOUpdate.getTitle()));
 
         eventDTOUpdate.setStateAction(CANCEL_REVIEW);
-        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", FIRST_ID, event1.getId())
+        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", firstId, event1.getId())
                         .content(objectMapper.writeValueAsString(eventDTOUpdate))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("state").value(CANCELED.toString()));
 
         eventDTOUpdate.setEventDate(now);
-        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", FIRST_ID, event1.getId())
+        mockMvc.perform(patch(EVENT_PRIVATE + "/{eventId}", firstId, event1.getId())
                         .content(objectMapper.writeValueAsString(eventDTOUpdate))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())

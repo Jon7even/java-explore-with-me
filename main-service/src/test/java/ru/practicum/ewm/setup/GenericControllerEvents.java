@@ -58,7 +58,7 @@ public class GenericControllerEvents extends GenericControllerTest {
     protected void initNewEventDto() {
         newEventDtoStandard = NewEventDto.builder()
                 .annotation("Test annotation for annotation Standard")
-                .category(FIRST_ID_INTEGER)
+                .category(firstIdInteger)
                 .description("Test description for description Standard")
                 .eventDate(now.plusHours(3))
                 .location(location)
@@ -70,7 +70,7 @@ public class GenericControllerEvents extends GenericControllerTest {
 
         newEventDtoRequestModerationFalse = NewEventDto.builder()
                 .annotation("Test annotation for annotation RequestModerationFalse")
-                .category(FIRST_ID_INTEGER)
+                .category(firstIdInteger)
                 .description("Test description for description RequestModerationFalse")
                 .eventDate(now.plusHours(10))
                 .location(location)
@@ -82,7 +82,7 @@ public class GenericControllerEvents extends GenericControllerTest {
 
         newEventDtoParticipantLimitTen = NewEventDto.builder()
                 .annotation("Test annotation for annotation ParticipantLimitTen")
-                .category(FIRST_ID_INTEGER)
+                .category(firstIdInteger)
                 .description("Test description for description ParticipantLimitTen")
                 .eventDate(now.plusDays(1))
                 .location(location)
@@ -94,7 +94,7 @@ public class GenericControllerEvents extends GenericControllerTest {
 
         newEventDtoPaidTrue = NewEventDto.builder()
                 .annotation("Test annotation for annotation PaidTrue")
-                .category(FIRST_ID_INTEGER)
+                .category(firstIdInteger)
                 .description("Test description for description PaidTrue")
                 .eventDate(now.plusWeeks(1))
                 .location(location)
@@ -106,7 +106,7 @@ public class GenericControllerEvents extends GenericControllerTest {
 
         newEventDtoFieldsDefault = NewEventDto.builder()
                 .annotation("Test annotation for annotation Default")
-                .category(FIRST_ID_INTEGER)
+                .category(firstIdInteger)
                 .description("Test description for description Default")
                 .eventDate(now.plusMonths(1))
                 .location(location)
