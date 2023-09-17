@@ -46,6 +46,13 @@
 		</dependency>
 
 		<dependency>
+			<groupId>ru.practicum</groupId>
+			<artifactId>stats-client</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
@@ -62,13 +69,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>ru.practicum</groupId>
-			<artifactId>stats-client</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
 			<version>${version.mapstruct}</version>
@@ -78,13 +78,6 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok-mapstruct-binding</artifactId>
 			<version>${version.mapstruct-lombok}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>ru.practicum</groupId>
-			<artifactId>stats-client</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<scope>compile</scope>
 		</dependency>
 
     </dependencies>

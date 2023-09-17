@@ -28,7 +28,7 @@ import static ru.practicum.ewm.constants.NamesLogsInController.IN_CONTROLLER_MET
 @RestController
 @RequestMapping(path = "/admin/users")
 @RequiredArgsConstructor
-public class UserController {
+public class UserAdminController {
     private final UserService userService;
 
     @PostMapping

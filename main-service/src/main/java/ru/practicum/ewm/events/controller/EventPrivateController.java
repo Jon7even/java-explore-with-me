@@ -75,8 +75,8 @@ public class EventPrivateController {
 
     @GetMapping("/{eventId}/requests")
     public ResponseEntity<List<ParticipationRequestDto>> getAllRequestsByInitiator(@PathVariable @Positive Long userId,
-                                                                           @PathVariable @Positive Long eventId,
-                                                                           HttpServletRequest request) {
+                                                                                   @PathVariable @Positive Long eventId,
+                                                                                   HttpServletRequest request) {
 
         log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
 

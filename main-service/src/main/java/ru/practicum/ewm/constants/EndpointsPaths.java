@@ -11,4 +11,8 @@ public class EndpointsPaths {
     public static final String EVENT_PUBLIC = "/events";
 
     public static final String REQUEST_PRIVATE = "/users/{userId}/requests";
+
+    public static final String COMPILATIONS_ADMIN = "/admin/compilations";
+
+    public static final String COMPILATIONS_PUBLIC = "/compilations";
 }

@@ -12,7 +12,6 @@ import ru.practicum.ewm.users.dto.UserShortDto;
 import ru.practicum.ewm.users.model.UserEntity;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface EventMapper {

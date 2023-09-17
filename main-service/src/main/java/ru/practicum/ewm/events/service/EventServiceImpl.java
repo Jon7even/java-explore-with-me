@@ -592,8 +592,8 @@ public class EventServiceImpl implements EventService {
             Long hits;
 
             try {
-                listResponse = Collections.singletonList(mapper.readValue(
-                        mapper.writeValueAsString(responseFromServer.getBody()), HitResponseTO.class));
+                listResponse = mapper.readValue(mapper.writeValueAsString(responseFromServer.getBody()),
+                        mapper.getTypeFactory().constructCollectionType(List.class, HitResponseTO.class));
             } catch (JsonProcessingException e) {
                 log.error("Something went wrong on the statistics server, contact Dev-Ops. Error: Json");
             }
@@ -625,7 +625,7 @@ public class EventServiceImpl implements EventService {
 
     private void sendHitToStatsServer(HttpServletRequest request) {
         ResponseEntity<Object> responseFromServer = statClient.createHit(HitCreateTO.builder()
-                .app("Explore With Me ***Stats Main Server***")
+                .app("Explore With Me ***Main Service Server***")
                 .uri(request.getRequestURI())
                 .ip(request.getRemoteAddr())
                 .timestamp(LocalDateTime.now())

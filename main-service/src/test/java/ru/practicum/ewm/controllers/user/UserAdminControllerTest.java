@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.practicum.ewm.constants.NamesExceptions.DUPLICATE_EMAIL;
 
-public class UserControllerTest extends GenericControllerTest {
+public class UserAdminControllerTest extends GenericControllerTest {
     @Autowired
     protected UserService userService;
 

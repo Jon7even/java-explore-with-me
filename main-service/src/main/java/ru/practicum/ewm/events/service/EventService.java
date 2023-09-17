@@ -28,5 +28,5 @@ public interface EventService {
     List<ParticipationRequestDto> getAllRequestsByInitiator(Long userId, Long eventId);
 
     EventRequestStatusUpdateResult confirmRequestByInitiator(Long userId, Long eventId,
-                                                        EventRequestStatusUpdateRequest updateRequest);
+                                                             EventRequestStatusUpdateRequest updateRequest);
 }

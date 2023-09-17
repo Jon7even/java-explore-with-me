@@ -55,7 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new IntegrityConstraintException(CATEGORY_ALREADY_USED);
         }
 
-        log.debug("Remove [idCategory={}] {}", catId, SERVICE_IN_DB);
+        log.debug("Remove category with [idCategory={}] {}", catId, SERVICE_IN_DB);
         categoryRepository.deleteById(catId);
         boolean isRemoved = categoryRepository.existsById(catId);
 
@@ -70,7 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     @Override
     public CategoryDto updateCategory(NewCategoryDto newCategoryDto, Integer catId) {
-        log.debug("Category for update came {} [newCategoryDto={}]", SERVICE_FROM_CONTROLLER, newCategoryDto);
+        log.debug("NewCategoryDto for update came {} [newCategoryDto={}]", SERVICE_FROM_CONTROLLER, newCategoryDto);
 
         CategoryEntity category = CategoryMapper.INSTANCE.toEntityFromDTOUpdate(newCategoryDto, catId);
         CategoryEntity checkedCategoryFromDB = findCategoryEntityById(catId);
@@ -91,7 +91,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> getCategoriesByPage(Integer from, Integer size) {
-        log.debug("Get all categories {}", SERVICE_IN_DB);
+        log.debug("Get all categories by pages {}", SERVICE_IN_DB);
 
         Pageable pageable = ConverterPage.getPageRequest(from, size, Optional.of(DEFAULT_SORT_BY_ID));
         List<CategoryEntity> listCategories = categoryRepository.findAll(pageable).getContent();

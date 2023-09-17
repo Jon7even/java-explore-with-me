@@ -10,6 +10,9 @@ public class NamesExceptions {
     public static final String DUPLICATE_CATEGORY = "could not execute statement; SQL [n/a]; constraint [uq_name]; " +
             "nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement";
 
+    public static final String DUPLICATE_TITLE = "could not execute statement; SQL [n/a]; constraint [uq_title]; " +
+            "nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement";
+
     public static final String EVENT_DATE_BEFORE_DURATION = "Field: eventDate. Error: must be before 2 hours.";
 
     public static final String START_AFTER_END = "Error: range: start after end.";
@@ -44,4 +47,6 @@ public class NamesExceptions {
     public static final String INCORRECT_STATUS = "Incorrect status for requests. Right state: CONFIRMED, REJECTED";
 
     public static final String REQUESTS_ALREADY_CONFIRMED = "This request(s) already confirmed";
+
+    public static final String EVENTS_NOT_EXIST = "Events with such IDs do not exist";
 }
