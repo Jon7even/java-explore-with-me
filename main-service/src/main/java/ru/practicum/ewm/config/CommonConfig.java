@@ -68,7 +68,7 @@ public class CommonConfig {
 
     public static final int DEFAULT_FIELD_PARTICIPANT = 0;
 
-    public static final int DEFAULT_MONTHS_COUNT = 36;
+    public static final int DEFAULT_MONTHS_COUNT = 12;
 
     public static final LocalDateTime DATA_SEARCH_HITS = LocalDateTime.of(2023, 1, 1, 0, 0);
 }

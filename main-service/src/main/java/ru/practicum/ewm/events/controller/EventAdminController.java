@@ -31,9 +31,9 @@ public class EventAdminController {
 
     @GetMapping
     public ResponseEntity<List<EventFullDto>> getByParams(
-            @RequestParam(defaultValue = "#{T(java.util.Collections).emptyList()}") List<Long> users,
-            @RequestParam(defaultValue = "#{T(java.util.Collections).emptyList()}") List<EventState> states,
-            @RequestParam(defaultValue = "#{T(java.util.Collections).emptyList()}") List<Integer> categories,
+            @RequestParam(required = false) List<Long> users,
+            @RequestParam(required = false) List<EventState> states,
+            @RequestParam(required = false) List<Integer> categories,
             @RequestParam(required = false) @DateTimeFormat(pattern = DATE_TIME_DEFAULT) LocalDateTime rangeStart,
             @RequestParam(required = false) @DateTimeFormat(pattern = DATE_TIME_DEFAULT) LocalDateTime rangeEnd,
             @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,

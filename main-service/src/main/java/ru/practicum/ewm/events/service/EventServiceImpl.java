@@ -45,7 +45,6 @@ import ru.practicum.ewm.utils.ConverterPage;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +52,6 @@ import java.util.stream.Collectors;
 
 import static ru.practicum.ewm.config.CommonConfig.*;
 import static ru.practicum.ewm.constants.CommonSort.DEFAULT_SORT_BY_ID;
-import static ru.practicum.ewm.constants.DateTimeFormat.DATE_TIME_DEFAULT;
 import static ru.practicum.ewm.constants.NamesExceptions.*;
 import static ru.practicum.ewm.constants.NamesLogsInService.*;
 import static ru.practicum.ewm.events.model.EventState.*;
@@ -179,11 +177,9 @@ public class EventServiceImpl implements EventService {
         LocalDateTime rangeStart;
         LocalDateTime rangeEnd;
         if (paramsSortDto.getRangeStart() == null || paramsSortDto.getRangeEnd() == null) {
-            LocalDateTime now = LocalDateTime.parse(LocalDateTime.now()
-                    .format(DateTimeFormatter.ofPattern(DATE_TIME_DEFAULT)));
+            LocalDateTime now = LocalDateTime.now();
             rangeStart = now;
-            rangeEnd = LocalDateTime.parse(now.plusMonths(DEFAULT_MONTHS_COUNT)
-                    .format(DateTimeFormatter.ofPattern(DATE_TIME_DEFAULT)));
+            rangeEnd = now.plusMonths(DEFAULT_MONTHS_COUNT);
         } else {
             checkValidTimeRange(paramsSortDto.getRangeStart(), paramsSortDto.getRangeEnd());
             rangeStart = paramsSortDto.getRangeStart();
@@ -259,11 +255,9 @@ public class EventServiceImpl implements EventService {
         LocalDateTime rangeStart;
         LocalDateTime rangeEnd;
         if (paramsSortDto.getRangeStart() == null || paramsSortDto.getRangeEnd() == null) {
-            LocalDateTime now = LocalDateTime.parse(LocalDateTime.now()
-                    .format(DateTimeFormatter.ofPattern(DATE_TIME_DEFAULT)));
+            LocalDateTime now = LocalDateTime.now();
             rangeStart = now;
-            rangeEnd = LocalDateTime.parse(now.plusMonths(DEFAULT_MONTHS_COUNT)
-                    .format(DateTimeFormatter.ofPattern(DATE_TIME_DEFAULT)));
+            rangeEnd = now.plusMonths(DEFAULT_MONTHS_COUNT);
         } else {
             checkValidTimeRange(paramsSortDto.getRangeStart(), paramsSortDto.getRangeEnd());
             rangeStart = paramsSortDto.getRangeStart();

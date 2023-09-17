@@ -21,6 +21,7 @@ import ru.practicum.ewm.exception.IntegrityConstraintException;
 import ru.practicum.ewm.users.mapper.UserMapper;
 import ru.practicum.ewm.utils.ConverterPage;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,12 +44,16 @@ public class CompilationServiceImpl implements CompilationService {
         log.debug("New newCompilationDto came {} [newCompilationDto={}]", SERVICE_FROM_CONTROLLER, newCompilationDto);
         checkTitleOnDuplicate(newCompilationDto.getTitle());
 
-        List<EventEntity> foundEvents = eventRepository.findAllById(newCompilationDto.getEvents());
-        log.debug("Found [count={}] events for create new compilation: {} {}",
-                foundEvents.size(), foundEvents, SERVICE_FROM_DB);
+        List<EventEntity> foundEvents = Collections.emptyList();
 
-        if (foundEvents.isEmpty()) {
-            log.debug("List events for compilation is empty");
+        if (newCompilationDto.getEvents() != null) {
+            foundEvents = eventRepository.findAllById(newCompilationDto.getEvents());
+            log.debug("Found [count={}] events for create new compilation: {} {}",
+                    foundEvents.size(), foundEvents, SERVICE_FROM_DB);
+
+            if (foundEvents.isEmpty()) {
+                log.debug("List events for compilation is empty");
+            }
         }
 
         CompilationEntity compilationEntity = CompilationMapper.INSTANCE.toEntityFromDTOCreate(
@@ -96,7 +101,7 @@ public class CompilationServiceImpl implements CompilationService {
             CompilationEntity compilationForUpdate = foundCompilation.get();
             CompilationEntity compilation = CompilationEntity.builder().id(compId).build();
 
-            if (!updateCompilationRequest.getEvents().isEmpty()) {
+            if (updateCompilationRequest.getEvents() != null && !updateCompilationRequest.getEvents().isEmpty()) {
                 List<EventEntity> eventsForUpdate = eventRepository.findAllById(updateCompilationRequest.getEvents());
                 log.debug("Found [count={}] events for update compilation: {} {}",
                         eventsForUpdate.size(), eventsForUpdate, SERVICE_FROM_DB);
@@ -138,6 +143,7 @@ public class CompilationServiceImpl implements CompilationService {
         log.debug("Get all Compilation by pages {}", SERVICE_IN_DB);
 
         Pageable pageable = ConverterPage.getPageRequest(from, size, Optional.of(DEFAULT_SORT_BY_ID));
+
         List<CompilationEntity> listCompilations = compilationRepository.findAllByPinned(pinned, pageable);
 
         if (listCompilations.isEmpty()) {

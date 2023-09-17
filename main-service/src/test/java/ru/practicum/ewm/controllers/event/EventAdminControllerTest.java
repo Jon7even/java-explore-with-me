@@ -147,7 +147,7 @@ public class EventAdminControllerTest extends GenericControllerEvents {
 
         mockMvc.perform(get(EVENT_ADMIN))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
+                .andExpect(jsonPath("$", hasSize(5)));
 
         mockMvc.perform(get(EVENT_PRIVATE, firstId))
                 .andExpect(status().isOk())

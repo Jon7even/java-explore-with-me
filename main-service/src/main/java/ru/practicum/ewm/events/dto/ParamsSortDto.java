@@ -1,17 +1,12 @@
 package ru.practicum.ewm.events.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import ru.practicum.ewm.events.model.EventState;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static ru.practicum.ewm.config.CommonConfig.DEFAULT_MONTHS_COUNT;
 import static ru.practicum.ewm.constants.DateTimeFormat.DATE_TIME_DEFAULT;
 
 
@@ -19,27 +14,21 @@ import static ru.practicum.ewm.constants.DateTimeFormat.DATE_TIME_DEFAULT;
 @Getter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 public class ParamsSortDto {
-    @NotNull
-    private final List<Long> users;
+    private List<Long> users;
 
-    @NotNull
-    private final List<EventState> states;
+    private List<EventState> states;
 
-    @NotNull
-    private final List<Integer> categories;
+    private List<Integer> categories;
 
-    @Builder.Default
     @JsonFormat(pattern = DATE_TIME_DEFAULT)
-    private LocalDateTime rangeStart = LocalDateTime.now();
+    private LocalDateTime rangeStart;
 
-    @Builder.Default
     @JsonFormat(pattern = DATE_TIME_DEFAULT)
-    private LocalDateTime rangeEnd = LocalDateTime.now().plusMonths(DEFAULT_MONTHS_COUNT);
+    private LocalDateTime rangeEnd;
 
-    @NotNull
-    private final Integer from;
+    private Integer from;
 
-    @NotNull
-    private final Integer size;
+    private Integer size;
 }
