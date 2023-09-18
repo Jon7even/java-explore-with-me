@@ -20,6 +20,8 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.ewm.constants.EndpointsPaths.CATEGORY_ADMIN;
+import static ru.practicum.ewm.constants.EndpointsPaths.CATEGORY_PUBLIC;
 import static ru.practicum.ewm.constants.NamesExceptions.CATEGORY_ALREADY_USED;
 import static ru.practicum.ewm.constants.NamesExceptions.DUPLICATE_CATEGORY;
 
@@ -41,7 +43,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
     @Test
     @DisplayName("Новая категория должна создаться с релевантными полями [createCategory]")
     void shouldCreateCategory_thenStatus201() throws Exception {
-        mockMvc.perform(post("/admin/categories")
+        mockMvc.perform(post(CATEGORY_ADMIN)
                         .content(objectMapper.writeValueAsString(firstNewCategoryDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -53,7 +55,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
     @DisplayName("Новая категория не должна создаться [createCategory]")
     void shouldNotCreateUser_thenStatus400And409() throws Exception {
         thirdNewCategoryDto.setName("testtesttesttesttesttesttesttesttesttesttesttesttest");
-        mockMvc.perform(post("/admin/categories")
+        mockMvc.perform(post(CATEGORY_ADMIN)
                         .content(objectMapper.writeValueAsString(thirdNewCategoryDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -64,7 +66,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
         secondNewCategoryDto.setName(" ");
-        mockMvc.perform(post("/admin/categories")
+        mockMvc.perform(post(CATEGORY_ADMIN)
                         .content(objectMapper.writeValueAsString(secondNewCategoryDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -75,7 +77,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
         categoryService.createCategory(firstNewCategoryDto);
-        mockMvc.perform(post("/admin/categories")
+        mockMvc.perform(post(CATEGORY_ADMIN)
                         .content(objectMapper.writeValueAsString(firstNewCategoryDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict())
@@ -91,7 +93,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
         categoryService.createCategory(firstNewCategoryDto);
         Integer idFirstCategory = categoryService.getCategoryById(firstIdInteger).getId();
 
-        mockMvc.perform(delete("/admin/categories/{catId}", secondIdInteger))
+        mockMvc.perform(delete(CATEGORY_ADMIN + "/{catId}", secondIdInteger))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("status").value("NOT_FOUND"))
                 .andExpect(jsonPath("reason").value("The required object was not found."))
@@ -99,10 +101,10 @@ public class CategoriesControllerTest extends GenericControllerTest {
                         .value("Category with id=" + secondIdInteger + " was not found"))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
-        mockMvc.perform(delete("/admin/categories/{catId}", idFirstCategory))
+        mockMvc.perform(delete(CATEGORY_ADMIN + "/{catId}", idFirstCategory))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(delete("/admin/categories/{catId}", idFirstCategory))
+        mockMvc.perform(delete(CATEGORY_ADMIN + "/{catId}", idFirstCategory))
                 .andExpect(status().isNotFound());
 
         initNewUserRequest();
@@ -121,7 +123,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
                 .title("Test Title Default")
                 .build();
         eventService.createEvent(newEventDtoFieldsDefault, firstId);
-        mockMvc.perform(delete("/admin/categories/{catId}", secondId))
+        mockMvc.perform(delete(CATEGORY_ADMIN + "/{catId}", secondId))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("status").value("CONFLICT"))
                 .andExpect(jsonPath("reason").value("Integrity constraint has been violated."))
@@ -135,7 +137,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
         categoryService.createCategory(firstNewCategoryDto);
 
         firstNewCategoryDto.setName("UpdatedCategory");
-        mockMvc.perform(patch("/admin/categories/{catId}", firstIdInteger)
+        mockMvc.perform(patch(CATEGORY_ADMIN + "/{catId}", firstIdInteger)
                         .content(objectMapper.writeValueAsString(firstNewCategoryDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -144,7 +146,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
         firstNewCategoryDto.setName("UpdatedCategory");
 
         firstNewCategoryDto.setName("Set new name");
-        mockMvc.perform(patch("/admin/categories/{catId}", firstIdInteger)
+        mockMvc.perform(patch(CATEGORY_ADMIN + "/{catId}", firstIdInteger)
                         .content(objectMapper.writeValueAsString(firstNewCategoryDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -159,7 +161,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
         CategoryDto category2 = categoryService.createCategory(secondNewCategoryDto);
         CategoryDto category3 = categoryService.createCategory(thirdNewCategoryDto);
 
-        mockMvc.perform(get("/categories"))
+        mockMvc.perform(get(CATEGORY_PUBLIC))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].id").value(category1.getId()))

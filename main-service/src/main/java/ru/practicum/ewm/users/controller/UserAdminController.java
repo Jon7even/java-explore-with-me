@@ -22,11 +22,12 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
+import static ru.practicum.ewm.constants.EndpointsPaths.USERS_ADMIN;
 import static ru.practicum.ewm.constants.NamesLogsInController.IN_CONTROLLER_METHOD;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "/admin/users")
+@RequestMapping(path = USERS_ADMIN)
 @RequiredArgsConstructor
 public class UserAdminController {
     private final UserService userService;

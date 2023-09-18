@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.ewm.constants.EndpointsPaths.USERS_ADMIN;
 import static ru.practicum.ewm.constants.NamesExceptions.DUPLICATE_EMAIL;
 
 public class UserAdminControllerTest extends GenericControllerTest {
@@ -30,7 +31,7 @@ public class UserAdminControllerTest extends GenericControllerTest {
     @Test
     @DisplayName("Пользователь должен создаться с релевантными полями [createUser]")
     void shouldCreateUser_thenStatus201() throws Exception {
-        mockMvc.perform(post("/admin/users")
+        mockMvc.perform(post(USERS_ADMIN)
                         .content(objectMapper.writeValueAsString(firstNewUserRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -43,7 +44,7 @@ public class UserAdminControllerTest extends GenericControllerTest {
     @DisplayName("Пользователь не должен создаться [createUser]")
     void shouldNotCreateUser_thenStatus400And409() throws Exception {
         secondNewUserRequest.setName(null);
-        mockMvc.perform(post("/admin/users")
+        mockMvc.perform(post(USERS_ADMIN)
                         .content(objectMapper.writeValueAsString(secondNewUserRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -54,7 +55,7 @@ public class UserAdminControllerTest extends GenericControllerTest {
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
         thirdNewUserRequest.setEmail("2@r.t");
-        mockMvc.perform(post("/admin/users")
+        mockMvc.perform(post(USERS_ADMIN)
                         .content(objectMapper.writeValueAsString(thirdNewUserRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -65,7 +66,7 @@ public class UserAdminControllerTest extends GenericControllerTest {
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
         userService.createUser(firstNewUserRequest);
-        mockMvc.perform(post("/admin/users")
+        mockMvc.perform(post(USERS_ADMIN)
                         .content(objectMapper.writeValueAsString(firstNewUserRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict())
@@ -103,7 +104,7 @@ public class UserAdminControllerTest extends GenericControllerTest {
         UserDto user2 = userService.createUser(secondNewUserRequest);
         UserDto user3 = userService.createUser(thirdNewUserRequest);
 
-        mockMvc.perform(get("/admin/users"))
+        mockMvc.perform(get(USERS_ADMIN))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].id").value(user1.getId()))
@@ -127,7 +128,7 @@ public class UserAdminControllerTest extends GenericControllerTest {
         UserDto user2 = userService.createUser(secondNewUserRequest);
         UserDto user3 = userService.createUser(thirdNewUserRequest);
 
-        mockMvc.perform(get("/admin/users")
+        mockMvc.perform(get(USERS_ADMIN)
                         .param("ids", "1")
                         .param("ids", "3")
                 )
@@ -138,7 +139,7 @@ public class UserAdminControllerTest extends GenericControllerTest {
                 .andExpect(jsonPath("$[1].id").value(user3.getId()))
                 .andExpect(jsonPath("$[1].name").value(user3.getName()));
 
-        mockMvc.perform(get("/admin/users")
+        mockMvc.perform(get(USERS_ADMIN)
                         .param("ids", "1")
                         .param("ids", "2")
                         .param("ids", "3")

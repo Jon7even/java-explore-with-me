@@ -1,10 +1,25 @@
 package ru.practicum.ewm.events.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.ToString;
+import lombok.Setter;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import ru.practicum.ewm.category.model.CategoryEntity;
 import ru.practicum.ewm.users.model.UserEntity;
 
-import javax.persistence.*;
+import javax.persistence.Id;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
 import java.time.LocalDateTime;
 
 import static ru.practicum.ewm.config.CommonConfig.*;

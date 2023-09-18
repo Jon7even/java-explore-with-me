@@ -13,11 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 
+import static ru.practicum.ewm.constants.EndpointsPaths.CATEGORY_ADMIN;
 import static ru.practicum.ewm.constants.NamesLogsInController.IN_CONTROLLER_METHOD;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "/admin/categories")
+@RequestMapping(path = CATEGORY_ADMIN)
 @RequiredArgsConstructor
 public class CategoryAdminController {
     private final CategoryService categoryService;

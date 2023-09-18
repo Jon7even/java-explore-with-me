@@ -47,6 +47,4 @@ public class NamesExceptions {
     public static final String INCORRECT_STATUS = "Incorrect status for requests. Right state: CONFIRMED, REJECTED";
 
     public static final String REQUESTS_ALREADY_CONFIRMED = "This request(s) already confirmed";
-
-    public static final String EVENTS_NOT_EXIST = "Events with such IDs do not exist";
 }

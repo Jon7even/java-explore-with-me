@@ -15,4 +15,10 @@ public class EndpointsPaths {
     public static final String COMPILATIONS_ADMIN = "/admin/compilations";
 
     public static final String COMPILATIONS_PUBLIC = "/compilations";
+
+    public static final String USERS_ADMIN = "/admin/users";
+
+    public static final String CATEGORY_ADMIN = "/admin/categories";
+
+    public static final String CATEGORY_PUBLIC = "/categories";
 }

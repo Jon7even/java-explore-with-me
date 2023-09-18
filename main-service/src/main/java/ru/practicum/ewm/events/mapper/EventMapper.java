@@ -1,6 +1,10 @@
 package ru.practicum.ewm.events.mapper;
 
-import org.mapstruct.*;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.model.CategoryEntity;

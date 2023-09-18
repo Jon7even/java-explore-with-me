@@ -1,9 +1,24 @@
 package ru.practicum.ewm.compilations.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.ToString;
+import lombok.Setter;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import ru.practicum.ewm.events.model.EventEntity;
 
-import javax.persistence.*;
+import javax.persistence.Id;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
+import javax.persistence.ManyToMany;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.CascadeType;
+import javax.persistence.JoinTable;
 import java.util.List;
 
 @Entity
@@ -22,8 +37,8 @@ public class CompilationEntity {
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = ("compilation_event"),
-            joinColumns = @JoinColumn(name = "compilation_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id"))
+            joinColumns = @JoinColumn(name = "compilation_id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "event_id", nullable = false))
     @ToString.Exclude
     private List<EventEntity> events;
 

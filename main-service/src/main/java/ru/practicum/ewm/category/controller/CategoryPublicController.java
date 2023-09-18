@@ -16,11 +16,12 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
+import static ru.practicum.ewm.constants.EndpointsPaths.CATEGORY_PUBLIC;
 import static ru.practicum.ewm.constants.NamesLogsInController.IN_CONTROLLER_METHOD;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "/categories")
+@RequestMapping(path = CATEGORY_PUBLIC)
 @RequiredArgsConstructor
 public class CategoryPublicController {
     private final CategoryService categoryService;
