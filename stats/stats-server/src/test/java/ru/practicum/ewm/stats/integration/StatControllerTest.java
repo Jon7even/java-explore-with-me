@@ -56,10 +56,10 @@ public class StatControllerTest extends GenericTests {
     }
 
     @Test
-    @DisplayName("Запросить статистику и забыть скорректировать время")
-    void shouldGetStatsByIncorrectDataTimeFormat_thenStatus400() throws Exception {
+    @DisplayName("Запросить статистику и перепутать старт с окончанием")
+    void shouldGetStatsByStartAfterEnd_thenStatus400() throws Exception {
         mockMvc.perform(get("/stats?start={start}&end={end}&uris={uris}&unique={unique}",
-                        start, end, uris, true))
+                        end.format(DEFAULT_TIME_FORMAT), start.format(DEFAULT_TIME_FORMAT), uris, true))
                 .andExpect(status().isBadRequest());
     }
 

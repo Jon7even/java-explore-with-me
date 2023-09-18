@@ -7,12 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.stats.dto.HitCreateTO;
 import ru.practicum.ewm.stats.dto.HitResponseTO;
 import ru.practicum.ewm.stats.dto.RequestStatListTO;
+import ru.practicum.ewm.stats.exception.IncorrectMadeRequestException;
 import ru.practicum.ewm.stats.mapper.StatMapper;
 import ru.practicum.ewm.stats.model.HitRequest;
 import ru.practicum.ewm.stats.projections.HitTO;
 import ru.practicum.ewm.stats.repository.StatRepository;
 import ru.practicum.ewm.stats.utils.ConverterRequest;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +37,8 @@ public class StatServiceImpl implements StatService {
     @Override
     public List<HitResponseTO> getStats(RequestStatListTO requestStatListTO) {
         log.debug("Get request [requestStatListTO={}]", requestStatListTO);
+
+        checkValidTimeRange(requestStatListTO.getStart(), requestStatListTO.getEnd());
         List<HitTO> listHits = Collections.emptyList();
 
         HitRequest request = ConverterRequest.getHitRequest(requestStatListTO);
@@ -72,6 +76,12 @@ public class StatServiceImpl implements StatService {
         }
 
         return listHits.stream().map(StatMapper::toDTOFromProjections).collect(Collectors.toList());
+    }
+
+    private void checkValidTimeRange(LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) {
+            throw new IncorrectMadeRequestException("Error: range: start after end.");
+        }
     }
 
 }
