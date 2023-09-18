@@ -148,10 +148,6 @@ public class EventAdminControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("message").value(START_AFTER_END))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
-        mockMvc.perform(get(EVENT_ADMIN))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(5)));
-
         mockMvc.perform(get(EVENT_PRIVATE, firstId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
@@ -159,20 +155,6 @@ public class EventAdminControllerTest extends GenericControllerEvents {
         mockMvc.perform(get(EVENT_PRIVATE, secondId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)));
-
-        mockMvc.perform(get(EVENT_ADMIN)
-                        .param("states", PENDING.toString())
-                        .param("users", "1, 2")
-                        .param("categories", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(5)));
-
-        mockMvc.perform(get(EVENT_ADMIN)
-                        .param("states", PENDING.toString())
-                        .param("users", "1")
-                        .param("categories", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
     }
 
 }

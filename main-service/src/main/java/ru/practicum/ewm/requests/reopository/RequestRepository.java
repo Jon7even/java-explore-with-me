@@ -21,7 +21,7 @@ public interface RequestRepository extends JpaRepository<RequestEntity, Long> {
             " LEFT JOIN FETCH rqs.event " +
             " LEFT JOIN FETCH rqs.requester " +
             "WHERE rqs.event.initiator = :initiator " +
-            "  AND rqs.event.id = :eventId")
+            "  AND rqs.event.id        = :eventId")
     List<RequestEntity> findAllByEventIdAndEventInitiator(@Param("eventId") Long eventId,
                                                           @Param("initiator") UserEntity initiator);
 

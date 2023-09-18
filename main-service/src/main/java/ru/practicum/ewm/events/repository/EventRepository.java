@@ -30,9 +30,9 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             " LEFT JOIN FETCH ev.category " +
             "WHERE ev.eventDate >= :rangeStart " +
             "  AND ev.eventDate <= :rangeEnd " +
-            "  AND ( (:users)      IS NULL OR ( (:users)      IS NOT NULL AND ev.initiator.id IN (:users) ) ) " +
-            "  AND ( (:states)     IS NULL OR ( (:states)     IS NOT NULL AND ev.state IN (:states) ) ) " +
-            "  AND ( (:categories) IS NULL OR ( (:categories) IS NOT NULL AND ev.category.id IN (:categories) ) )")
+            "  AND (COALESCE(:users, NULL)        IS NULL OR ev.initiator.id  IN (:users) ) " +
+            "  AND (COALESCE(:states, NULL)       IS NULL OR ev.state         IN (:states) ) " +
+            "  AND (COALESCE(:categories, NULL)   IS NULL OR ev.category.id   IN (:categories) )")
     List<EventEntity> findByAdminParamsAndPageable(@Param("users") List<Long> users,
                                                    @Param("states") List<EventState> states,
                                                    @Param("categories") List<Integer> categories,
@@ -48,11 +48,11 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "WHERE ev.eventDate >= :rangeStart " +
             "  AND ev.eventDate <= :rangeEnd " +
             "  AND ev.state      = :state " +
-            "  AND (COALESCE(:paid, NULL)         IS NULL OR ev.paid = :paid ) " +
-            "  AND (COALESCE(:categories, NULL)   IS NULL OR ev.category.id IN (:categories) ) " +
-            "  AND (COALESCE(:text, NULL)         IS NULL OR " +
+            "  AND (COALESCE(:paid, NULL)           IS NULL OR ev.paid = :paid ) " +
+            "  AND (COALESCE(:categories, NULL)     IS NULL OR ev.category.id IN (:categories) ) " +
+            "  AND (COALESCE(:text, NULL)           IS NULL OR " +
             "                      (LOWER (ev.annotation) LIKE LOWER(concat('%', :text, '%')) " +
-            "                           OR LOWER (ev.description) LIKE LOWER(concat('%', :text, '%'))  ) ) " +
+            "                           OR LOWER (ev.description) LIKE LOWER(concat('%', :text, '%'))  ) )" +
             "  AND ev.participantLimit = 0 " +
             "      OR ev.participantLimit <= ev.confirmedRequests")
     List<EventEntity> findEventsOnlyAvailableByParamsAndPageable(@Param("state") EventState state,
@@ -71,10 +71,10 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "WHERE ev.eventDate >= :rangeStart " +
             "  AND ev.eventDate <= :rangeEnd " +
             "  AND ev.state      = :state " +
-            "  AND ( :paid         IS NULL OR ( :paid         IS NOT NULL AND ev.paid = :paid ) ) " +
-            "  AND ( (:categories) IS NULL OR ( (:categories) IS NOT NULL AND ev.category.id IN (:categories) ) ) " +
-            "  AND ( :text         IS NULL OR ( :text         IS NOT NULL AND " +
-            "                      LOWER (ev.annotation) LIKE LOWER(concat('%', :text, '%')) " +
+            "  AND (COALESCE(:paid, NULL)           IS NULL OR ev.paid = :paid ) " +
+            "  AND (COALESCE(:categories, NULL)     IS NULL OR ev.category.id IN (:categories) ) " +
+            "  AND (COALESCE(:text, NULL)           IS NULL OR " +
+            "                      (LOWER (ev.annotation) LIKE LOWER(concat('%', :text, '%')) " +
             "                           OR LOWER (ev.description) LIKE LOWER(concat('%', :text, '%'))  ) )")
     List<EventEntity> findEventsByParamsAndPageable(@Param("state") EventState state,
                                                     @Param("text") String text,
