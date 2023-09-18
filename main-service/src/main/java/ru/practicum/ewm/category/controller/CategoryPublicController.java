@@ -27,7 +27,7 @@ public class CategoryPublicController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<CategoryDto>> getCategoriesByPage(
+    public ResponseEntity<List<CategoryDto>> getByPage(
             @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
             @Positive @RequestParam(name = "size", defaultValue = "10") Integer size,
             HttpServletRequest request) {
@@ -38,7 +38,7 @@ public class CategoryPublicController {
     }
 
     @GetMapping("/{catId}")
-    public ResponseEntity<CategoryDto> getCategoryById(@PathVariable @Positive Integer catId,
+    public ResponseEntity<CategoryDto> getById(@PathVariable @Positive Integer catId,
                                                        HttpServletRequest request) {
 
         log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());

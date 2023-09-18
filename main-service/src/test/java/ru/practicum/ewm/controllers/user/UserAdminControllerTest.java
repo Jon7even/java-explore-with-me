@@ -13,7 +13,9 @@ import java.util.Collections;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.practicum.ewm.constants.EndpointsPaths.USERS_ADMIN;
@@ -29,7 +31,7 @@ public class UserAdminControllerTest extends GenericControllerTest {
     }
 
     @Test
-    @DisplayName("Пользователь должен создаться с релевантными полями [createUser]")
+    @DisplayName("Пользователь должен создаться с релевантными полями [create]")
     void shouldCreateUser_thenStatus201() throws Exception {
         mockMvc.perform(post(USERS_ADMIN)
                         .content(objectMapper.writeValueAsString(firstNewUserRequest))
@@ -41,7 +43,7 @@ public class UserAdminControllerTest extends GenericControllerTest {
     }
 
     @Test
-    @DisplayName("Пользователь не должен создаться [createUser]")
+    @DisplayName("Пользователь не должен создаться [create]")
     void shouldNotCreateUser_thenStatus400And409() throws Exception {
         secondNewUserRequest.setName(null);
         mockMvc.perform(post(USERS_ADMIN)
@@ -77,7 +79,7 @@ public class UserAdminControllerTest extends GenericControllerTest {
     }
 
     @Test
-    @DisplayName("Пользователь должен удалиться по [ID] [removeUserById]")
+    @DisplayName("Пользователь должен удалиться по [ID] [removeById]")
     void shouldDeleteUserById_thenStatus204And404() throws Exception {
         userService.createUser(firstNewUserRequest);
         Long idFirstUser = userService.getUsersByListId(Collections.emptyList(), 0, 10).get(0).getId();
@@ -98,7 +100,7 @@ public class UserAdminControllerTest extends GenericControllerTest {
     }
 
     @Test
-    @DisplayName("Получить всех пользователей без указания ListIds [getUsersByListId]")
+    @DisplayName("Получить всех пользователей без указания ListIds [getByListId]")
     void shouldGetAllUsersByListEmpty_thenStatus200() throws Exception {
         UserDto user1 = userService.createUser(firstNewUserRequest);
         UserDto user2 = userService.createUser(secondNewUserRequest);
@@ -122,7 +124,7 @@ public class UserAdminControllerTest extends GenericControllerTest {
     }
 
     @Test
-    @DisplayName("Получить всех пользователей c указанием ListIds [getUsersByListId]")
+    @DisplayName("Получить всех пользователей c указанием ListIds [getByListId]")
     void shouldGetAllUsersByListNotEmpty_thenStatus200() throws Exception {
         UserDto user1 = userService.createUser(firstNewUserRequest);
         UserDto user2 = userService.createUser(secondNewUserRequest);

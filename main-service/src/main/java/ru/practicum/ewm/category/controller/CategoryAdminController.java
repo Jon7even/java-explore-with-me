@@ -24,7 +24,7 @@ public class CategoryAdminController {
     private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody NewCategoryDto newCategoryDto,
+    public ResponseEntity<CategoryDto> create(@Valid @RequestBody NewCategoryDto newCategoryDto,
                                                       HttpServletRequest request) {
 
         log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
@@ -33,7 +33,7 @@ public class CategoryAdminController {
     }
 
     @DeleteMapping("/{catId}")
-    public ResponseEntity<Void> removeCategoryById(@PathVariable @Positive Integer catId, HttpServletRequest request) {
+    public ResponseEntity<Void> removeById(@PathVariable @Positive Integer catId, HttpServletRequest request) {
 
         log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
 
@@ -43,7 +43,7 @@ public class CategoryAdminController {
     }
 
     @PatchMapping("/{catId}")
-    public ResponseEntity<CategoryDto> updateCategoryById(@PathVariable @Positive Integer catId,
+    public ResponseEntity<CategoryDto> updateById(@PathVariable @Positive Integer catId,
                                                           @Valid @RequestBody NewCategoryDto newCategoryDto,
                                                           HttpServletRequest request) {
 

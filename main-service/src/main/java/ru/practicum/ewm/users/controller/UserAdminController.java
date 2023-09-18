@@ -33,8 +33,8 @@ public class UserAdminController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@Valid @RequestBody NewUserRequest newUserRequest,
-                                              HttpServletRequest request) {
+    public ResponseEntity<UserDto> create(@Valid @RequestBody NewUserRequest newUserRequest,
+                                          HttpServletRequest request) {
 
         log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
 
@@ -42,7 +42,7 @@ public class UserAdminController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> getUsersByListId(
+    public ResponseEntity<List<UserDto>> getByListId(
             @RequestParam(defaultValue = "#{T(java.util.Collections).emptyList()}") List<Long> ids,
             @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
             @Positive @RequestParam(name = "size", defaultValue = "10") Integer size,
@@ -54,7 +54,7 @@ public class UserAdminController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> removeUserById(@PathVariable @Positive Long userId, HttpServletRequest request) {
+    public ResponseEntity<Void> removeById(@PathVariable @Positive Long userId, HttpServletRequest request) {
 
         log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
 
