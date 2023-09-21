@@ -9,6 +9,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.ewm.rating.model.RatingEntity;
+import ru.practicum.ewm.rating.model.RatingId;
+import ru.practicum.ewm.rating.repository.*;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.mapper.CategoryMapper;
 import ru.practicum.ewm.category.model.CategoryEntity;
@@ -23,6 +26,7 @@ import ru.practicum.ewm.events.model.LocationEntity;
 import ru.practicum.ewm.events.repository.EventRepository;
 import ru.practicum.ewm.events.repository.LocationRepository;
 import ru.practicum.ewm.events.utils.ValidatorDefaultFields;
+import ru.practicum.ewm.exception.EntityNotDeletedException;
 import ru.practicum.ewm.exception.EntityNotFoundException;
 import ru.practicum.ewm.exception.IncorrectMadeRequestException;
 import ru.practicum.ewm.exception.IntegrityConstraintException;
@@ -66,6 +70,7 @@ public class EventServiceImpl implements EventService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
+    private final RatingRepository ratingRepository;
     private final StatClient statClient;
 
     @Override
@@ -214,36 +219,30 @@ public class EventServiceImpl implements EventService {
                 SERVICE_FROM_CONTROLLER, updateEventAdminRequest);
         ValidatorDefaultFields.checkEventDateForAdmin(updateEventAdminRequest.getEventDate());
 
-        Optional<EventEntity> foundEventEntity = eventRepository.findById(eventId);
+        EventEntity eventFromDb = findEventEntityById(eventId);
 
-        if (foundEventEntity.isPresent()) {
-            EventEntity entityFromDb = foundEventEntity.get();
-            log.debug("Found [event={}] {}", entityFromDb, SERVICE_FROM_DB);
+        log.debug("Found [event={}] {}", eventFromDb, SERVICE_FROM_DB);
 
-            checkEventStateForConfirm(entityFromDb.getState(), updateEventAdminRequest.getStateAction());
-            setValidFieldsForConfirm(entityFromDb, updateEventAdminRequest);
+        checkEventStateForConfirm(eventFromDb.getState(), updateEventAdminRequest.getStateAction());
+        setValidFieldsForConfirm(eventFromDb, updateEventAdminRequest);
 
-            LocalDateTime now = null;
+        LocalDateTime now = null;
 
-            if (updateEventAdminRequest.getStateAction() != null) {
-                if (entityFromDb.getState().equals(PUBLISHED)) {
-                    now = LocalDateTime.now();
-                }
+        if (updateEventAdminRequest.getStateAction() != null) {
+            if (eventFromDb.getState().equals(PUBLISHED)) {
+                now = LocalDateTime.now();
             }
-            EventMapper.INSTANCE.updateEntityFromDTO(updateEventAdminRequest, entityFromDb, now);
-
-            log.debug("Updated [updatedEvent={}] {} by admin", entityFromDb, SERVICE_IN_DB);
-            EventEntity updatedEvent = eventRepository.save(entityFromDb);
-
-            log.debug("Updated Event has returned [event={}] {}", updatedEvent, SERVICE_FROM_DB);
-            return EventMapper.INSTANCE.toDTOFullResponseFromEntity(updatedEvent,
-                    CategoryMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getCategory()),
-                    UserMapper.INSTANCE.toDTOShortResponseFromEntity(updatedEvent.getInitiator()),
-                    LocationMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getLocation()));
-        } else {
-            log.warn("Event by [eventId={}] was not found", eventId);
-            throw new EntityNotFoundException(String.format("Event with id=%d was not found", eventId));
         }
+        EventMapper.INSTANCE.updateEntityFromDTO(updateEventAdminRequest, eventFromDb, now);
+
+        log.debug("Updated [updatedEvent={}] {} by admin", eventFromDb, SERVICE_IN_DB);
+        EventEntity updatedEvent = eventRepository.save(eventFromDb);
+
+        log.debug("Updated Event has returned [event={}] {}", updatedEvent, SERVICE_FROM_DB);
+        return EventMapper.INSTANCE.toDTOFullResponseFromEntity(updatedEvent,
+                CategoryMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getCategory()),
+                UserMapper.INSTANCE.toDTOShortResponseFromEntity(updatedEvent.getInitiator()),
+                LocationMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getLocation()));
     }
 
     @Override
@@ -405,6 +404,64 @@ public class EventServiceImpl implements EventService {
         }
 
         return eventRequestUpdatedStatus;
+    }
+
+    @Transactional
+    @Override
+    public void addLikeByEventId(Long userId, Long eventId, Boolean isPositive) {
+        UserEntity userFromDB = findUserEntityById(userId);
+        EventEntity eventFromDb = findEventEntityById(eventId);
+        RatingEntity ratingForSave = setValidFieldsForLike(userFromDB, eventFromDb, isPositive);
+
+        log.debug("Add entity [rating={}] {}", ratingForSave, SERVICE_IN_DB);
+        ratingRepository.save(ratingForSave);
+    }
+
+    private RatingEntity setValidFieldsForLike(UserEntity liker, EventEntity event, Boolean isPositive) {
+        if (event.getInitiator().equals(liker)) {
+            throw new IntegrityConstraintException(EVENT_IS_YOUR);
+        }
+
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        Optional<RatingEntity> ratingFromDB = ratingRepository.findByIdLikerAndIdEvent(liker, event);
+
+        if (ratingFromDB.isPresent()) {
+            RatingEntity ratingFromSave = ratingFromDB.get();
+            log.debug("Like is already in DB. [isPositiveFromDB={}] [isPositiveFromController={}]",
+                    ratingFromSave.getIs_positive(), isPositive);
+
+            ratingFromSave.setUpdatedOn(dateTime);
+            ratingFromSave.setIs_positive(isPositive);
+            log.debug("Performing an update entity rating...");
+
+            return ratingFromSave;
+        } else {
+            log.debug("Creating a new entity rating...");
+            return RatingEntity.builder()
+                    .id(RatingId.builder().liker(liker).event(event).build())
+                    .is_positive(isPositive)
+                    .createdOn(dateTime)
+                    .build();
+        }
+    }
+
+    @Transactional
+    @Override
+    public void removeLikeByEventId(Long userId, Long eventId) {
+        UserEntity userFromDB = findUserEntityById(userId);
+        EventEntity eventFromDb = findEventEntityById(eventId);
+
+        log.debug("Remove like by [userId={}] and [eventId={}] {}", userId, eventId, SERVICE_IN_DB);
+        ratingRepository.deleteByIdLikerAndIdEvent(userFromDB, eventFromDb);
+        boolean isRemoved = ratingRepository.existsByIdLikerAndIdEvent(userFromDB, eventFromDb);
+
+        if (!isRemoved) {
+            log.debug("Like by [userId={}] has removed {}", userId, SERVICE_FROM_DB);
+        } else {
+            log.error("Like by [userId={}] was not removed", userId);
+            throw new EntityNotDeletedException(String.format("Like by user id=%d was not deleted", userId));
+        }
     }
 
     private LocationEntity createLocation(Location location) {

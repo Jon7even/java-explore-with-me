@@ -4,7 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import ru.practicum.ewm.events.dto.EventFullDto;
 import ru.practicum.ewm.events.dto.EventShortDto;
 import ru.practicum.ewm.events.dto.NewEventDto;
@@ -16,6 +25,7 @@ import ru.practicum.ewm.requests.dto.ParticipationRequestDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
@@ -93,6 +103,31 @@ public class EventPrivateController {
         log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
 
         return ResponseEntity.ok().body(eventService.confirmRequestByInitiator(userId, eventId, updateRequest));
+    }
+
+    @PutMapping("/{eventId}/like")
+    public ResponseEntity<Void> addLikeById(@PathVariable @Positive Long userId,
+                                            @PathVariable @Positive Long eventId,
+                                            @RequestParam @NotNull Boolean isPositive,
+                                            HttpServletRequest request) {
+
+        log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
+
+        eventService.addLikeByEventId(userId, eventId, isPositive);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/{eventId}/like")
+    public ResponseEntity<Void> removeLikeById(@PathVariable @Positive Long userId,
+                                               @PathVariable @Positive Long eventId,
+                                               HttpServletRequest request) {
+
+        log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
+
+        eventService.removeLikeByEventId(userId, eventId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

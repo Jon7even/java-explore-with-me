@@ -38,9 +38,9 @@ CREATE TABLE IF NOT EXISTS event (
     title               VARCHAR(120)          NOT NULL,
     views               INTEGER               DEFAULT 0,
     CONSTRAINT          PK_EVENT              PRIMARY KEY(id),
-    CONSTRAINT          FK_EVENT_TO_CATEGORY  FOREIGN KEY(category_id)  REFERENCES category(id) ON DELETE CASCADE,
-    CONSTRAINT          FK_EVENT_TO_LOCATION  FOREIGN KEY(location_id)  REFERENCES location(id) ON DELETE CASCADE,
-    CONSTRAINT          FK_EVENT_TO_USER      FOREIGN KEY(initiator_id) REFERENCES users(id)    ON DELETE CASCADE
+    CONSTRAINT          FK_EVENT_TO_CATEGORY  FOREIGN KEY(category_id)  REFERENCES category(id)   ON DELETE CASCADE,
+    CONSTRAINT          FK_EVENT_TO_LOCATION  FOREIGN KEY(location_id)  REFERENCES location(id)   ON DELETE CASCADE,
+    CONSTRAINT          FK_EVENT_TO_USER      FOREIGN KEY(initiator_id) REFERENCES users(id)      ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS request (
@@ -50,23 +50,16 @@ CREATE TABLE IF NOT EXISTS request (
     requester_id        BIGINT                  NOT NULL,
     status              VARCHAR(32)             NOT NULL,
     CONSTRAINT          PK_REQUEST              PRIMARY KEY(id),
-    CONSTRAINT          FK_REQUEST_TO_EVENT     FOREIGN KEY(requester_id) REFERENCES users(id)     ON DELETE CASCADE,
-    CONSTRAINT          FK_REQUEST_TO_CATEGORY  FOREIGN KEY(event_id)     REFERENCES event(id)     ON DELETE CASCADE
+    CONSTRAINT          FK_REQUEST_TO_USER      FOREIGN KEY(requester_id) REFERENCES users(id)   ON DELETE CASCADE,
+    CONSTRAINT          FK_REQUEST_TO_EVENT     FOREIGN KEY(event_id)     REFERENCES event(id)   ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS compilation (
-    id                INTEGER          NOT NULL GENERATED ALWAYS AS IDENTITY,
-    pinned            BOOLEAN          DEFAULT FALSE,
-    title             VARCHAR(50)      NOT NULL,
-    CONSTRAINT        PK_COMPILATION   PRIMARY KEY(id)
-);
-
-CREATE TABLE IF NOT EXISTS compilation (
-    id                INTEGER          NOT NULL GENERATED ALWAYS AS IDENTITY,
-    pinned            BOOLEAN          DEFAULT FALSE,
-    title             VARCHAR(50)      NOT NULL,
-    CONSTRAINT        PK_COMPILATION   PRIMARY KEY(id),
-    CONSTRAINT        UNQ_COMPILATION_TITLE  UNIQUE(title)
+    id                INTEGER                 NOT NULL GENERATED ALWAYS AS IDENTITY,
+    pinned            BOOLEAN                 DEFAULT FALSE,
+    title             VARCHAR(50)             NOT NULL,
+    CONSTRAINT        PK_COMPILATION          PRIMARY KEY(id),
+    CONSTRAINT        UNQ_COMPILATION_TITLE   UNIQUE(title)
 );
 
 CREATE TABLE IF NOT EXISTS compilation_event (
@@ -76,3 +69,15 @@ CREATE TABLE IF NOT EXISTS compilation_event (
     CONSTRAINT        FK_COMPILATION_EVENT_TO_EVENT        FOREIGN KEY(event_id)       REFERENCES event(id)        ON DELETE CASCADE,
     CONSTRAINT        PK_COMPILATION_EVENT                 PRIMARY KEY(compilation_id, event_id)
 );
+
+CREATE TABLE IF NOT EXISTS event_rating (
+    liker_id          BIGINT                  NOT NULL,
+    event_id          BIGINT                  NOT NULL,
+    is_positive       BOOLEAN                 NOT NULL,
+    created_on        TIMESTAMP               WITHOUT TIME ZONE     NOT NULL,
+    updated_on        TIMESTAMP               WITHOUT TIME ZONE,
+    CONSTRAINT        PK_RATING               PRIMARY KEY(liker_id, event_id),
+    CONSTRAINT        FK_RATING_TO_USERS      FOREIGN KEY(liker_id)   REFERENCES users(id)   ON DELETE CASCADE,
+    CONSTRAINT        FK_RATING_TO_EVENT      FOREIGN KEY(event_id)   REFERENCES event(id)   ON DELETE CASCADE
+);
+

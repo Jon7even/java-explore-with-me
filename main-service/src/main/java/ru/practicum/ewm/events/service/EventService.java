@@ -29,4 +29,8 @@ public interface EventService {
 
     EventRequestStatusUpdateResult confirmRequestByInitiator(Long userId, Long eventId,
                                                              EventRequestStatusUpdateRequest updateRequest);
+
+    void addLikeByEventId(Long userId, Long eventId, Boolean isPositive);
+
+    void removeLikeByEventId(Long userId, Long eventId);
 }

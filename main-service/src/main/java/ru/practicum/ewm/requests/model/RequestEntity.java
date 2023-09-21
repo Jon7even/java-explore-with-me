@@ -9,17 +9,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.ewm.events.model.EventEntity;
 import ru.practicum.ewm.users.model.UserEntity;
 
-import javax.persistence.Id;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.Enumerated;
-import javax.persistence.EnumType;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -39,12 +29,12 @@ public class RequestEntity {
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "event_id", nullable = false)
     @ToString.Exclude
     private EventEntity event;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "requester_id", nullable = false)
     @ToString.Exclude
     private UserEntity requester;

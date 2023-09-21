@@ -4,7 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.dto.NewCategoryDto;
 import ru.practicum.ewm.category.service.CategoryService;
@@ -25,7 +31,7 @@ public class CategoryAdminController {
 
     @PostMapping
     public ResponseEntity<CategoryDto> create(@Valid @RequestBody NewCategoryDto newCategoryDto,
-                                                      HttpServletRequest request) {
+                                              HttpServletRequest request) {
 
         log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
 
@@ -44,8 +50,8 @@ public class CategoryAdminController {
 
     @PatchMapping("/{catId}")
     public ResponseEntity<CategoryDto> updateById(@PathVariable @Positive Integer catId,
-                                                          @Valid @RequestBody NewCategoryDto newCategoryDto,
-                                                          HttpServletRequest request) {
+                                                  @Valid @RequestBody NewCategoryDto newCategoryDto,
+                                                  HttpServletRequest request) {
 
         log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
 
