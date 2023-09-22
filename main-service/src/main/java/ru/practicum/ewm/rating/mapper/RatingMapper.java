@@ -5,16 +5,19 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import ru.practicum.ewm.rating.dto.RatingDto;
 import ru.practicum.ewm.rating.model.RatingEntity;
-import ru.practicum.ewm.users.dto.UserShortDto;
 
-import java.time.LocalDateTime;
+import java.util.Set;
+
 
 @Mapper(componentModel = "spring")
 public interface RatingMapper {
     RatingMapper INSTANCE = Mappers.getMapper(RatingMapper.class);
 
-    @Mapping(source = "liker", target = "liker")
-    @Mapping(source = "rating.is_positive", target = "is_positive")
-    @Mapping(source = "dateTime", target = "dateTime")
-    RatingDto toDTOResponseFromEntity(RatingEntity rating, UserShortDto liker, LocalDateTime dateTime);
+    @Mapping(source = "rating.liker.id", target = "liker")
+    @Mapping(source = "rating.createdOn", target = "dateTime")
+    RatingDto toDTOResponseFromEntity(RatingEntity rating);
+
+    @Mapping(source = "rating.liker.id", target = "liker")
+    @Mapping(source = "rating.createdOn", target = "dateTime")
+    Set<RatingDto> toListDTOResponseFromListEntity(Set<RatingEntity> rating);
 }

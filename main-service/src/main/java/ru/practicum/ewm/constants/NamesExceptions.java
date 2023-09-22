@@ -49,4 +49,6 @@ public class NamesExceptions {
     public static final String REQUESTS_ALREADY_CONFIRMED = "This request(s) already confirmed";
 
     public static final String EVENT_IS_YOUR = "You can't like your own event";
+
+    public static final String UNSUPPORTED_SORT = "UNSUPPORTED_SORT_RATING";
 }

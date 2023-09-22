@@ -83,4 +83,32 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
                                                     @Param("rangeStart") LocalDateTime rangeStart,
                                                     @Param("rangeEnd") LocalDateTime rangeEnd,
                                                     Pageable pageable);
+
+    @Query("SELECT ev, COALESCE(COUNT(topLikes),0) " +
+            " FROM EventEntity AS ev " +
+            " LEFT JOIN FETCH ev.initiator " +
+            " LEFT JOIN FETCH ev.location " +
+            " LEFT JOIN FETCH ev.category " +
+            " LEFT JOIN FETCH ev.likes AS topLikes " +
+            "GROUP BY topLikes")
+    List<EventEntity> findEventsByTopLikes(Pageable pageable);
+
+    @Query("SELECT ev, COALESCE(COUNT(topDislikes),0) " +
+            " FROM EventEntity AS ev " +
+            " LEFT JOIN FETCH ev.initiator " +
+            " LEFT JOIN FETCH ev.location " +
+            " LEFT JOIN FETCH ev.category " +
+            " LEFT JOIN FETCH ev.disLikes AS topDislikes " +
+            "GROUP BY ev")
+    List<EventEntity> findEventsByTopDisLikes(Pageable pageable);
+
+    @Query("SELECT ev, COALESCE(COUNT(topLikes),0) - COALESCE(COUNT(topDislikes),0) AS topRating " +
+            " FROM EventEntity AS ev " +
+            " LEFT JOIN FETCH ev.initiator " +
+            " LEFT JOIN FETCH ev.location " +
+            " LEFT JOIN FETCH ev.category " +
+            " LEFT JOIN FETCH ev.likes AS topLikes " +
+            " LEFT JOIN FETCH ev.disLikes AS topDislikes " +
+            "GROUP BY ev")
+    List<EventEntity> findEventsByTotalRating(Pageable pageable);
 }

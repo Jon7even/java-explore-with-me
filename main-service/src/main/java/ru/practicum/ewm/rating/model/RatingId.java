@@ -1,28 +1,38 @@
 package ru.practicum.ewm.rating.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import ru.practicum.ewm.events.model.EventEntity;
-import ru.practicum.ewm.users.model.UserEntity;
+import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Embeddable
 @Builder
+@Setter
+@Getter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "event_rating", schema = "public")
 public class RatingId implements Serializable {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "liker_id", nullable = false)
-    @ToString.Exclude
-    private UserEntity liker;
+    @Column(name = "liker_id")
+    private Long likerId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", nullable = false)
-    @ToString.Exclude
-    private EventEntity event;
+    @Column(name = "event_id")
+    private Long eventId;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RatingId)) return false;
+        RatingId ratingId = (RatingId) o;
+        return Objects.equals(likerId, ratingId.likerId) && Objects.equals(eventId, ratingId.eventId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(likerId, eventId);
+    }
 }

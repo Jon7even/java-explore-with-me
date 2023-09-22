@@ -11,7 +11,19 @@ import ru.practicum.ewm.category.model.CategoryEntity;
 import ru.practicum.ewm.rating.model.RatingEntity;
 import ru.practicum.ewm.users.model.UserEntity;
 
-import javax.persistence.*;
+import javax.persistence.Id;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.FetchType;
+import javax.persistence.CascadeType;
+import javax.persistence.JoinColumn;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
+import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -89,15 +101,13 @@ public class EventEntity {
     @Column(name = "views", nullable = false)
     private Integer views = 0;
 
-    @OneToMany(mappedBy = "id.liker", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "event", fetch = FetchType.EAGER)
     @Where(clause = "is_positive = true")
-    @ToString.Exclude
-    private Set<RatingEntity> like = new HashSet<>();
+    private Set<RatingEntity> likes = new HashSet<>();
 
-    @OneToMany(mappedBy = "id.liker", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "event", fetch = FetchType.EAGER)
     @Where(clause = "is_positive = false")
-    @ToString.Exclude
-    private Set<RatingEntity> disLike = new HashSet<>();
+    private Set<RatingEntity> disLikes = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

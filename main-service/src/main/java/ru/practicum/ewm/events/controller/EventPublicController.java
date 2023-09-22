@@ -14,8 +14,10 @@ import ru.practicum.ewm.events.dto.EventShortDto;
 import ru.practicum.ewm.events.dto.PublicParamsSortDto;
 import ru.practicum.ewm.events.model.EventSort;
 import ru.practicum.ewm.events.service.EventService;
+import ru.practicum.ewm.rating.model.RatingSort;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -70,6 +72,18 @@ public class EventPublicController {
         log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
 
         return ResponseEntity.ok().body(eventService.getPublicEventById(id, request));
+    }
+
+    @GetMapping("/top")
+    public ResponseEntity<List<EventShortDto>> getTopBySortAndPages(
+            @RequestParam @NotNull RatingSort sort,
+            @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
+            @Positive @RequestParam(name = "size", defaultValue = "10") Integer size,
+            HttpServletRequest request) {
+
+        log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
+
+        return ResponseEntity.ok().body(eventService.getTopEventsBySortAndPages(sort, from, size));
     }
 
 }

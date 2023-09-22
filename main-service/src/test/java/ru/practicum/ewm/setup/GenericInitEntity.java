@@ -8,6 +8,8 @@ public class GenericInitEntity {
 
     protected Long secondId = 2L;
 
+    protected Long thirdId = 3L;
+
     protected Integer firstIdInteger = 1;
 
     protected Integer secondIdInteger = 2;

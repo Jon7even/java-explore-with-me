@@ -1,7 +1,7 @@
 package ru.practicum.ewm.events.mapper;
 
-import org.mapstruct.Mapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.MappingTarget;
@@ -12,10 +12,12 @@ import ru.practicum.ewm.events.dto.*;
 import ru.practicum.ewm.events.model.EventEntity;
 import ru.practicum.ewm.events.model.EventState;
 import ru.practicum.ewm.events.model.LocationEntity;
+import ru.practicum.ewm.rating.dto.RatingDto;
 import ru.practicum.ewm.users.dto.UserShortDto;
 import ru.practicum.ewm.users.model.UserEntity;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface EventMapper {
@@ -57,6 +59,8 @@ public interface EventMapper {
     @Mapping(target = "state", ignore = true)
     @Mapping(source = "eventDto.title", target = "title")
     @Mapping(target = "views", ignore = true)
+    @Mapping(target = "likes", ignore = true)
+    @Mapping(target = "disLikes", ignore = true)
     void updateEntityFromDTO(UpdateEventUserRequest eventDto, @MappingTarget EventEntity entity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -76,6 +80,8 @@ public interface EventMapper {
     @Mapping(target = "state", ignore = true)
     @Mapping(source = "eventDto.title", target = "title")
     @Mapping(target = "views", ignore = true)
+    @Mapping(target = "likes", ignore = true)
+    @Mapping(target = "disLikes", ignore = true)
     void updateEntityFromDTO(UpdateEventAdminRequest eventDto, @MappingTarget EventEntity entity, LocalDateTime now);
 
     @Mapping(source = "eventEntity.annotation", target = "annotation")
@@ -94,8 +100,32 @@ public interface EventMapper {
     @Mapping(source = "eventEntity.state", target = "state")
     @Mapping(source = "eventEntity.title", target = "title")
     @Mapping(source = "eventEntity.views", target = "views")
+    @Mapping(source = "likes", target = "likes")
+    @Mapping(source = "disLikes", target = "disLikes")
     EventFullDto toDTOFullResponseFromEntity(EventEntity eventEntity, CategoryDto category,
-                                             UserShortDto initiator, Location location);
+                                             UserShortDto initiator, Location location,
+                                             Set<RatingDto> likes, Set<RatingDto> disLikes);
+
+    @Mapping(source = "eventEntity.annotation", target = "annotation")
+    @Mapping(source = "category", target = "category")
+    @Mapping(source = "eventEntity.confirmedRequests", target = "confirmedRequests")
+    @Mapping(source = "eventEntity.createdOn", target = "createdOn")
+    @Mapping(source = "eventEntity.description", target = "description")
+    @Mapping(source = "eventEntity.eventDate", target = "eventDate")
+    @Mapping(source = "eventEntity.id", target = "id")
+    @Mapping(source = "initiator", target = "initiator")
+    @Mapping(source = "location", target = "location")
+    @Mapping(source = "eventEntity.paid", target = "paid")
+    @Mapping(source = "eventEntity.participantLimit", target = "participantLimit")
+    @Mapping(source = "eventEntity.publishedOn", target = "publishedOn")
+    @Mapping(source = "eventEntity.requestModeration", target = "requestModeration")
+    @Mapping(source = "eventEntity.state", target = "state")
+    @Mapping(source = "eventEntity.title", target = "title")
+    @Mapping(source = "eventEntity.views", target = "views")
+    @Mapping(target = "likes", ignore = true)
+    @Mapping(target = "disLikes", ignore = true)
+    EventFullDto toDTOFullResponseFromCreatedEntity(EventEntity eventEntity, CategoryDto category,
+                                                    UserShortDto initiator, Location location);
 
     @Mapping(source = "eventEntity.annotation", target = "annotation")
     @Mapping(source = "category", target = "category")
@@ -104,7 +134,8 @@ public interface EventMapper {
     @Mapping(source = "eventEntity.id", target = "id")
     @Mapping(source = "initiator", target = "initiator")
     @Mapping(source = "eventEntity.paid", target = "paid")
-    @Mapping(source = "eventEntity.title", target = "title")
-    @Mapping(source = "eventEntity.views", target = "views")
-    EventShortDto toDTOShortResponseFromEntity(EventEntity eventEntity, CategoryDto category, UserShortDto initiator);
+    @Mapping(source = "likes", target = "likes")
+    @Mapping(source = "disLikes", target = "disLikes")
+    EventShortDto toDTOShortResponseFromEntity(EventEntity eventEntity, CategoryDto category, UserShortDto initiator,
+                                               Set<RatingDto> likes, Set<RatingDto> disLikes);
 }

@@ -9,8 +9,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.ewm.rating.mapper.RatingMapper;
 import ru.practicum.ewm.rating.model.RatingEntity;
 import ru.practicum.ewm.rating.model.RatingId;
+import ru.practicum.ewm.rating.model.RatingSort;
 import ru.practicum.ewm.rating.repository.*;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.mapper.CategoryMapper;
@@ -89,7 +91,9 @@ public class EventServiceImpl implements EventService {
         return listEvents.stream()
                 .map((eventEntity -> EventMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity,
                         CategoryMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getCategory()),
-                        UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator())
+                        UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator()),
+                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getLikes()),
+                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getDisLikes())
                 )))
                 .collect(Collectors.toList());
     }
@@ -117,7 +121,9 @@ public class EventServiceImpl implements EventService {
         Location location = LocationMapper.INSTANCE.toDTOResponseFromEntity(createdEvent.getLocation());
 
         log.debug("New event has returned [event={}] {}", event, SERVICE_FROM_DB);
-        return EventMapper.INSTANCE.toDTOFullResponseFromEntity(createdEvent, categoryDto, userShortDto, location);
+        return EventMapper.INSTANCE.toDTOFullResponseFromCreatedEntity(
+                createdEvent, categoryDto, userShortDto, location
+        );
     }
 
     @Override
@@ -129,12 +135,14 @@ public class EventServiceImpl implements EventService {
 
         if (foundEventEntity.isPresent()) {
             EventEntity event = foundEventEntity.get();
-            log.debug("Found [event={}] {}", event, SERVICE_FROM_DB);
+            log.debug("Found [event={}] [likes={}] [disLikes={}] {}", event, event.getLikes(), event.getDisLikes(), SERVICE_FROM_DB);
 
             return EventMapper.INSTANCE.toDTOFullResponseFromEntity(event,
                     CategoryMapper.INSTANCE.toDTOResponseFromEntity(event.getCategory()),
                     UserMapper.INSTANCE.toDTOShortResponseFromEntity(event.getInitiator()),
-                    LocationMapper.INSTANCE.toDTOResponseFromEntity(event.getLocation()));
+                    LocationMapper.INSTANCE.toDTOResponseFromEntity(event.getLocation()),
+                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(event.getLikes()),
+                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(event.getDisLikes()));
         } else {
             log.warn("Event by [eventId={}] was not found", eventId);
             throw new EntityNotFoundException(String.format("Event with id=%d was not found", eventId));
@@ -166,7 +174,10 @@ public class EventServiceImpl implements EventService {
             return EventMapper.INSTANCE.toDTOFullResponseFromEntity(updatedEvent,
                     CategoryMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getCategory()),
                     UserMapper.INSTANCE.toDTOShortResponseFromEntity(updatedEvent.getInitiator()),
-                    LocationMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getLocation()));
+                    LocationMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getLocation()),
+                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(updatedEvent.getLikes()),
+                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(updatedEvent.getDisLikes()));
+
         } else {
             log.warn("Event by [eventId={}] was not found", eventId);
             throw new EntityNotFoundException(String.format("Event with id=%d was not found", eventId));
@@ -207,8 +218,10 @@ public class EventServiceImpl implements EventService {
                 .map((eventEntity -> EventMapper.INSTANCE.toDTOFullResponseFromEntity(eventEntity,
                         CategoryMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getCategory()),
                         UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator()),
-                        LocationMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getLocation()))
-                ))
+                        LocationMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getLocation()),
+                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getLikes()),
+                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getDisLikes())
+                )))
                 .collect(Collectors.toList());
     }
 
@@ -242,7 +255,9 @@ public class EventServiceImpl implements EventService {
         return EventMapper.INSTANCE.toDTOFullResponseFromEntity(updatedEvent,
                 CategoryMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getCategory()),
                 UserMapper.INSTANCE.toDTOShortResponseFromEntity(updatedEvent.getInitiator()),
-                LocationMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getLocation()));
+                LocationMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getLocation()),
+                RatingMapper.INSTANCE.toListDTOResponseFromListEntity(updatedEvent.getLikes()),
+                RatingMapper.INSTANCE.toListDTOResponseFromListEntity(updatedEvent.getDisLikes()));
     }
 
     @Override
@@ -289,7 +304,9 @@ public class EventServiceImpl implements EventService {
         return listEvents.stream()
                 .map((eventEntity -> EventMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity,
                         CategoryMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getCategory()),
-                        UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator())
+                        UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator()),
+                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getLikes()),
+                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getDisLikes())
                 )))
                 .collect(Collectors.toList());
     }
@@ -312,7 +329,9 @@ public class EventServiceImpl implements EventService {
             return EventMapper.INSTANCE.toDTOFullResponseFromEntity(event,
                     CategoryMapper.INSTANCE.toDTOResponseFromEntity(event.getCategory()),
                     UserMapper.INSTANCE.toDTOShortResponseFromEntity(event.getInitiator()),
-                    LocationMapper.INSTANCE.toDTOResponseFromEntity(event.getLocation()));
+                    LocationMapper.INSTANCE.toDTOResponseFromEntity(event.getLocation()),
+                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(event.getLikes()),
+                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(event.getDisLikes()));
         } else {
             log.warn("Event by [eventId={}] with state Published was not found", eventId);
             throw new EntityNotFoundException(String.format("Event with id=%d was not found", eventId));
@@ -422,15 +441,19 @@ public class EventServiceImpl implements EventService {
             throw new IntegrityConstraintException(EVENT_IS_YOUR);
         }
 
+        if(!event.getState().equals(PUBLISHED)) {
+            throw new IntegrityConstraintException(EVENT_NOT_PUBLISHED);
+        }
+
         LocalDateTime dateTime = LocalDateTime.now();
 
-        Optional<RatingEntity> ratingFromDB = ratingRepository.findByIdLikerAndIdEvent(liker, event);
+        Optional<RatingEntity> ratingFromDB = ratingRepository.findByLikerAndEvent(liker, event);
 
         if (ratingFromDB.isPresent()) {
             RatingEntity ratingFromSave = ratingFromDB.get();
+
             log.debug("Like is already in DB. [isPositiveFromDB={}] [isPositiveFromController={}]",
                     ratingFromSave.getIs_positive(), isPositive);
-
             ratingFromSave.setUpdatedOn(dateTime);
             ratingFromSave.setIs_positive(isPositive);
             log.debug("Performing an update entity rating...");
@@ -439,7 +462,9 @@ public class EventServiceImpl implements EventService {
         } else {
             log.debug("Creating a new entity rating...");
             return RatingEntity.builder()
-                    .id(RatingId.builder().liker(liker).event(event).build())
+                    .id(RatingId.builder().likerId(liker.getId()).eventId(event.getId()).build())
+                    .liker(liker)
+                    .event(event)
                     .is_positive(isPositive)
                     .createdOn(dateTime)
                     .build();
@@ -453,8 +478,8 @@ public class EventServiceImpl implements EventService {
         EventEntity eventFromDb = findEventEntityById(eventId);
 
         log.debug("Remove like by [userId={}] and [eventId={}] {}", userId, eventId, SERVICE_IN_DB);
-        ratingRepository.deleteByIdLikerAndIdEvent(userFromDB, eventFromDb);
-        boolean isRemoved = ratingRepository.existsByIdLikerAndIdEvent(userFromDB, eventFromDb);
+        ratingRepository.deleteByLikerAndEvent(userFromDB, eventFromDb);
+        boolean isRemoved = ratingRepository.existsByLikerAndEvent(userFromDB, eventFromDb);
 
         if (!isRemoved) {
             log.debug("Like by [userId={}] has removed {}", userId, SERVICE_FROM_DB);
@@ -462,6 +487,43 @@ public class EventServiceImpl implements EventService {
             log.error("Like by [userId={}] was not removed", userId);
             throw new EntityNotDeletedException(String.format("Like by user id=%d was not deleted", userId));
         }
+    }
+
+    @Override
+    public List<EventShortDto> getTopEventsBySortAndPages(RatingSort sort, Integer from, Integer size) {
+        Pageable pageable = ConverterPage.getPageRequest(from, size, Optional.of(getRatingSortFromParams(sort)));
+
+        log.debug("Get TOP public list events by [sort={}] and pages {}", sort, SERVICE_IN_DB);
+        List<EventEntity> listEvents;
+
+        switch (sort) {
+            case LIKES:
+                listEvents = eventRepository.findEventsByTopLikes(pageable);
+                break;
+            case DISLIKES:
+                listEvents = eventRepository.findEventsByTopDisLikes(pageable);
+                break;
+            case TOTAL_RATING:
+                listEvents = eventRepository.findEventsByTotalRating(pageable);
+                break;
+            default:
+                throw new IntegrityConstraintException(UNSUPPORTED_SORT);
+        }
+
+        if (listEvents.isEmpty()) {
+            log.debug("Has returned empty list events {}", SERVICE_FROM_DB);
+        } else {
+            log.debug("Found list events [count={}] {}", listEvents.size(), SERVICE_FROM_DB);
+        }
+
+        return listEvents.stream()
+                .map((eventEntity -> EventMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity,
+                        CategoryMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getCategory()),
+                        UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator()),
+                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getLikes()),
+                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getDisLikes())
+                )))
+                .collect(Collectors.toList());
     }
 
     private LocationEntity createLocation(Location location) {
@@ -709,6 +771,25 @@ public class EventServiceImpl implements EventService {
 
     private Boolean checkStatusInListRequests(List<RequestEntity> requestEntities, RequestStatus status) {
         return requestEntities.stream().anyMatch(request -> request.getStatus().equals(status));
+    }
+
+    private Sort getRatingSortFromParams(RatingSort sort) {
+        Sort sortResult;
+
+        switch (sort) {
+            case LIKES:
+                sortResult = Sort.by(Sort.Direction.DESC, "topLikes");
+                break;
+            case DISLIKES:
+                sortResult = Sort.by(Sort.Direction.DESC, "topDislikes");
+                break;
+            case TOTAL_RATING:
+                sortResult = Sort.by(Sort.Direction.DESC, "topRating");
+                break;
+            default:
+                throw new IntegrityConstraintException(UNSUPPORTED_SORT);
+        }
+        return sortResult;
     }
 
 }

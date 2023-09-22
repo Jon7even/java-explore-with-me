@@ -124,6 +124,7 @@ public class EventAdminControllerTest extends GenericControllerEvents {
         mockMvc.perform(patch(EVENT_ADMIN + "/{eventId}", event1.getId())
                         .content(objectMapper.writeValueAsString(eventDTOConfirm))
                         .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("state").value(PUBLISHED.toString()))
                 .andExpect(jsonPath("publishedOn").value(notNullValue()));
     }

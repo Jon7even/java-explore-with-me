@@ -12,9 +12,9 @@ import java.util.Optional;
 
 @Repository
 public interface RatingRepository extends JpaRepository<RatingEntity, RatingId> {
-    void deleteByIdLikerAndIdEvent(@Param("liker") UserEntity liker, @Param("event") EventEntity event);
+    void deleteByLikerAndEvent(@Param("liker") UserEntity liker, @Param("event") EventEntity event);
 
-    boolean existsByIdLikerAndIdEvent(@Param("liker") UserEntity liker, @Param("event") EventEntity event);
+    boolean existsByLikerAndEvent(@Param("liker") UserEntity liker, @Param("event") EventEntity event);
 
-    Optional<RatingEntity> findByIdLikerAndIdEvent(@Param("liker") UserEntity liker, @Param("event") EventEntity event);
+    Optional<RatingEntity> findByLikerAndEvent(@Param("liker") UserEntity liker, @Param("event") EventEntity event);
 }

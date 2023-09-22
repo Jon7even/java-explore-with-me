@@ -6,9 +6,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.ewm.category.dto.CategoryDto;
+import ru.practicum.ewm.rating.dto.RatingDto;
 import ru.practicum.ewm.users.dto.UserShortDto;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import static ru.practicum.ewm.constants.DateTimeFormat.DATE_TIME_DEFAULT;
 
@@ -35,4 +37,8 @@ public class EventShortDto {
     private String title;
 
     private Integer views;
+
+    private Set<RatingDto> likes;
+
+    private Set<RatingDto> disLikes;
 }
