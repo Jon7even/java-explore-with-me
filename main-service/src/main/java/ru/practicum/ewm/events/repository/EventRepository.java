@@ -43,7 +43,6 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
     @Query("SELECT ev " +
             " FROM EventEntity AS ev " +
             " LEFT JOIN FETCH ev.initiator " +
-            " LEFT JOIN FETCH ev.location " +
             " LEFT JOIN FETCH ev.category " +
             "WHERE ev.eventDate >= :rangeStart " +
             "  AND ev.eventDate <= :rangeEnd " +
@@ -66,7 +65,6 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
     @Query("SELECT ev " +
             " FROM EventEntity AS ev " +
             " LEFT JOIN FETCH ev.initiator " +
-            " LEFT JOIN FETCH ev.location " +
             " LEFT JOIN FETCH ev.category " +
             "WHERE ev.eventDate >= :rangeStart " +
             "  AND ev.eventDate <= :rangeEnd " +
@@ -84,31 +82,23 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
                                                     @Param("rangeEnd") LocalDateTime rangeEnd,
                                                     Pageable pageable);
 
-    @Query("SELECT ev, COALESCE(COUNT(topLikes),0) " +
+    @Query(value = "SELECT ev " +
             " FROM EventEntity AS ev " +
             " LEFT JOIN FETCH ev.initiator " +
-            " LEFT JOIN FETCH ev.location " +
             " LEFT JOIN FETCH ev.category " +
-            " LEFT JOIN FETCH ev.likes AS topLikes " +
-            "GROUP BY topLikes")
+            " JOIN FETCH ev.likes ")
     List<EventEntity> findEventsByTopLikes(Pageable pageable);
 
-    @Query("SELECT ev, COALESCE(COUNT(topDislikes),0) " +
+    @Query(value = "SELECT ev " +
             " FROM EventEntity AS ev " +
             " LEFT JOIN FETCH ev.initiator " +
-            " LEFT JOIN FETCH ev.location " +
             " LEFT JOIN FETCH ev.category " +
-            " LEFT JOIN FETCH ev.disLikes AS topDislikes " +
-            "GROUP BY ev")
+            " JOIN FETCH ev.disLikes ")
     List<EventEntity> findEventsByTopDisLikes(Pageable pageable);
 
-    @Query("SELECT ev, COALESCE(COUNT(topLikes),0) - COALESCE(COUNT(topDislikes),0) AS topRating " +
+    @Query(value = "SELECT ev " +
             " FROM EventEntity AS ev " +
             " LEFT JOIN FETCH ev.initiator " +
-            " LEFT JOIN FETCH ev.location " +
-            " LEFT JOIN FETCH ev.category " +
-            " LEFT JOIN FETCH ev.likes AS topLikes " +
-            " LEFT JOIN FETCH ev.disLikes AS topDislikes " +
-            "GROUP BY ev")
+            " LEFT JOIN FETCH ev.category ")
     List<EventEntity> findEventsByTotalRating(Pageable pageable);
 }

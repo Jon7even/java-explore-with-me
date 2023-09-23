@@ -227,6 +227,8 @@ public class FeatureRatingTest extends GenericControllerEvents {
         eventService.confirmEvent(event4.getId(), eventDTOConfirm);
         eventService.confirmEvent(event5.getId(), eventDTOConfirm);
 
+        eventService.addLikeByEventId(2L, event1.getId(), false);
+
         eventService.addLikeByEventId(2L, event2.getId(), true);
         eventService.addLikeByEventId(3L, event2.getId(), true);
         eventService.addLikeByEventId(4L, event2.getId(), true);
@@ -237,15 +239,91 @@ public class FeatureRatingTest extends GenericControllerEvents {
         eventService.addLikeByEventId(3L, event3.getId(), true);
         eventService.addLikeByEventId(4L, event3.getId(), true);
 
+        eventService.addLikeByEventId(5L, event4.getId(), true);
+
         mockMvc.perform(get(EVENT_PUBLIC + "/top")
                         .param("sort", RatingSort.LIKES.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(5)))
+                .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].id").value(event2.getId()))
                 .andExpect(jsonPath("$[0].annotation").value(event2.getAnnotation()))
                 .andExpect(jsonPath("$[1].id").value(event3.getId()))
-                .andExpect(jsonPath("$[1].annotation").value(event3.getAnnotation()));
+                .andExpect(jsonPath("$[1].annotation").value(event3.getAnnotation()))
+                .andExpect(jsonPath("$[2].id").value(event4.getId()))
+                .andExpect(jsonPath("$[2].annotation").value(event4.getAnnotation()));
 
+        eventService.addLikeByEventId(2L, event1.getId(), true);
+
+        eventService.addLikeByEventId(2L, event2.getId(), false);
+        eventService.addLikeByEventId(3L, event2.getId(), false);
+        eventService.addLikeByEventId(4L, event2.getId(), false);
+        eventService.addLikeByEventId(5L, event2.getId(), false);
+        eventService.addLikeByEventId(6L, event2.getId(), false);
+
+        eventService.addLikeByEventId(2L, event3.getId(), false);
+        eventService.addLikeByEventId(3L, event3.getId(), false);
+        eventService.addLikeByEventId(4L, event3.getId(), false);
+
+        eventService.addLikeByEventId(5L, event4.getId(), false);
+
+        mockMvc.perform(get(EVENT_PUBLIC + "/top")
+                        .param("sort", RatingSort.DISLIKES.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0].id").value(event2.getId()))
+                .andExpect(jsonPath("$[0].annotation").value(event2.getAnnotation()))
+                .andExpect(jsonPath("$[0].likes").value(hasSize(0)))
+                .andExpect(jsonPath("$[1].id").value(event3.getId()))
+                .andExpect(jsonPath("$[1].annotation").value(event3.getAnnotation()))
+                .andExpect(jsonPath("$[1].likes").value(hasSize(0)))
+                .andExpect(jsonPath("$[2].id").value(event4.getId()))
+                .andExpect(jsonPath("$[2].annotation").value(event4.getAnnotation()))
+                .andExpect(jsonPath("$[2].likes").value(hasSize(0)));
+
+        eventService.addLikeByEventId(2L, event1.getId(), true);
+        eventService.addLikeByEventId(3L, event1.getId(), true);
+        eventService.addLikeByEventId(4L, event1.getId(), true);
+        eventService.addLikeByEventId(5L, event1.getId(), true);
+        eventService.addLikeByEventId(6L, event1.getId(), true);
+
+        eventService.addLikeByEventId(2L, event5.getId(), false);
+        eventService.addLikeByEventId(3L, event5.getId(), true);
+        eventService.addLikeByEventId(4L, event5.getId(), true);
+        eventService.addLikeByEventId(5L, event5.getId(), true);
+        eventService.addLikeByEventId(6L, event5.getId(), true);
+
+        eventService.addLikeByEventId(2L, event4.getId(), false);
+        eventService.addLikeByEventId(3L, event4.getId(), false);
+        eventService.addLikeByEventId(4L, event4.getId(), false);
+        eventService.addLikeByEventId(5L, event4.getId(), true);
+        eventService.addLikeByEventId(6L, event4.getId(), true);
+
+        eventService.addLikeByEventId(2L, event3.getId(), false);
+        eventService.addLikeByEventId(3L, event3.getId(), false);
+        eventService.addLikeByEventId(4L, event3.getId(), false);
+        eventService.addLikeByEventId(5L, event3.getId(), false);
+        eventService.addLikeByEventId(6L, event3.getId(), true);
+
+        eventService.addLikeByEventId(2L, event2.getId(), false);
+        eventService.addLikeByEventId(3L, event2.getId(), false);
+        eventService.addLikeByEventId(4L, event2.getId(), false);
+        eventService.addLikeByEventId(5L, event2.getId(), false);
+        eventService.addLikeByEventId(6L, event2.getId(), false);
+
+        mockMvc.perform(get(EVENT_PUBLIC + "/top")
+                        .param("sort", RatingSort.TOTAL_RATING.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(5)))
+                .andExpect(jsonPath("$[0].id").value(event1.getId()))
+                .andExpect(jsonPath("$[0].annotation").value(event1.getAnnotation()))
+                .andExpect(jsonPath("$[1].id").value(event5.getId()))
+                .andExpect(jsonPath("$[1].annotation").value(event5.getAnnotation()))
+                .andExpect(jsonPath("$[2].id").value(event4.getId()))
+                .andExpect(jsonPath("$[2].annotation").value(event4.getAnnotation()))
+                .andExpect(jsonPath("$[3].id").value(event3.getId()))
+                .andExpect(jsonPath("$[3].annotation").value(event3.getAnnotation()))
+                .andExpect(jsonPath("$[4].id").value(event2.getId()))
+                .andExpect(jsonPath("$[4].annotation").value(event2.getAnnotation()));
     }
 
 }

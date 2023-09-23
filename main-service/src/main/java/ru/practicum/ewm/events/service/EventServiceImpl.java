@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.ewm.events.model.*;
 import ru.practicum.ewm.rating.mapper.RatingMapper;
 import ru.practicum.ewm.rating.model.RatingEntity;
 import ru.practicum.ewm.rating.model.RatingId;
@@ -21,10 +22,6 @@ import ru.practicum.ewm.category.repository.CategoryRepository;
 import ru.practicum.ewm.events.dto.*;
 import ru.practicum.ewm.events.mapper.EventMapper;
 import ru.practicum.ewm.events.mapper.LocationMapper;
-import ru.practicum.ewm.events.model.EventEntity;
-import ru.practicum.ewm.events.model.EventSort;
-import ru.practicum.ewm.events.model.EventState;
-import ru.practicum.ewm.events.model.LocationEntity;
 import ru.practicum.ewm.events.repository.EventRepository;
 import ru.practicum.ewm.events.repository.LocationRepository;
 import ru.practicum.ewm.events.utils.ValidatorDefaultFields;
@@ -48,10 +45,12 @@ import ru.practicum.ewm.users.mapper.UserMapper;
 import ru.practicum.ewm.users.model.UserEntity;
 import ru.practicum.ewm.users.repository.UserRepository;
 import ru.practicum.ewm.utils.ConverterPage;
+import ru.practicum.ewm.utils.EventTopRatingComparator;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -436,41 +435,6 @@ public class EventServiceImpl implements EventService {
         ratingRepository.save(ratingForSave);
     }
 
-    private RatingEntity setValidFieldsForLike(UserEntity liker, EventEntity event, Boolean isPositive) {
-        if (event.getInitiator().equals(liker)) {
-            throw new IntegrityConstraintException(EVENT_IS_YOUR);
-        }
-
-        if(!event.getState().equals(PUBLISHED)) {
-            throw new IntegrityConstraintException(EVENT_NOT_PUBLISHED);
-        }
-
-        LocalDateTime dateTime = LocalDateTime.now();
-
-        Optional<RatingEntity> ratingFromDB = ratingRepository.findByLikerAndEvent(liker, event);
-
-        if (ratingFromDB.isPresent()) {
-            RatingEntity ratingFromSave = ratingFromDB.get();
-
-            log.debug("Like is already in DB. [isPositiveFromDB={}] [isPositiveFromController={}]",
-                    ratingFromSave.getIs_positive(), isPositive);
-            ratingFromSave.setUpdatedOn(dateTime);
-            ratingFromSave.setIs_positive(isPositive);
-            log.debug("Performing an update entity rating...");
-
-            return ratingFromSave;
-        } else {
-            log.debug("Creating a new entity rating...");
-            return RatingEntity.builder()
-                    .id(RatingId.builder().likerId(liker.getId()).eventId(event.getId()).build())
-                    .liker(liker)
-                    .event(event)
-                    .is_positive(isPositive)
-                    .createdOn(dateTime)
-                    .build();
-        }
-    }
-
     @Transactional
     @Override
     public void removeLikeByEventId(Long userId, Long eventId) {
@@ -491,20 +455,26 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventShortDto> getTopEventsBySortAndPages(RatingSort sort, Integer from, Integer size) {
-        Pageable pageable = ConverterPage.getPageRequest(from, size, Optional.of(getRatingSortFromParams(sort)));
+        Pageable pageable = ConverterPage.getPageRequest(from, size, Optional.empty());
 
         log.debug("Get TOP public list events by [sort={}] and pages {}", sort, SERVICE_IN_DB);
         List<EventEntity> listEvents;
 
         switch (sort) {
             case LIKES:
-                listEvents = eventRepository.findEventsByTopLikes(pageable);
+                List<EventEntity> listFromDBLikes = eventRepository.findEventsByTopLikes(pageable);
+                listEvents = listFromDBLikes.stream().sorted(Comparator.comparing((EventEntity e) ->
+                                e.getLikes().size()).reversed()).collect(Collectors.toList());
                 break;
             case DISLIKES:
-                listEvents = eventRepository.findEventsByTopDisLikes(pageable);
+                List<EventEntity> listFromDBDisLikes = eventRepository.findEventsByTopDisLikes(pageable);
+                listEvents = listFromDBDisLikes.stream().sorted(Comparator.comparing((EventEntity e) ->
+                        e.getDisLikes().size()).reversed()).collect(Collectors.toList());
                 break;
             case TOTAL_RATING:
-                listEvents = eventRepository.findEventsByTotalRating(pageable);
+                List<EventEntity> listFromDBTop = eventRepository.findEventsByTotalRating(pageable);
+                listEvents = listFromDBTop.stream().sorted(new EventTopRatingComparator().reversed())
+                        .collect(Collectors.toList());
                 break;
             default:
                 throw new IntegrityConstraintException(UNSUPPORTED_SORT);
@@ -773,23 +743,39 @@ public class EventServiceImpl implements EventService {
         return requestEntities.stream().anyMatch(request -> request.getStatus().equals(status));
     }
 
-    private Sort getRatingSortFromParams(RatingSort sort) {
-        Sort sortResult;
-
-        switch (sort) {
-            case LIKES:
-                sortResult = Sort.by(Sort.Direction.DESC, "topLikes");
-                break;
-            case DISLIKES:
-                sortResult = Sort.by(Sort.Direction.DESC, "topDislikes");
-                break;
-            case TOTAL_RATING:
-                sortResult = Sort.by(Sort.Direction.DESC, "topRating");
-                break;
-            default:
-                throw new IntegrityConstraintException(UNSUPPORTED_SORT);
+    private RatingEntity setValidFieldsForLike(UserEntity liker, EventEntity event, Boolean isPositive) {
+        if (event.getInitiator().equals(liker)) {
+            throw new IntegrityConstraintException(EVENT_IS_YOUR);
         }
-        return sortResult;
+
+        if (!event.getState().equals(PUBLISHED)) {
+            throw new IntegrityConstraintException(EVENT_NOT_PUBLISHED);
+        }
+
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        Optional<RatingEntity> ratingFromDB = ratingRepository.findByLikerAndEvent(liker, event);
+
+        if (ratingFromDB.isPresent()) {
+            RatingEntity ratingFromSave = ratingFromDB.get();
+
+            log.debug("Like is already in DB. [isPositiveFromDB={}] [isPositiveFromController={}]",
+                    ratingFromSave.getIs_positive(), isPositive);
+            ratingFromSave.setUpdatedOn(dateTime);
+            ratingFromSave.setIs_positive(isPositive);
+            log.debug("Performing an update entity rating...");
+
+            return ratingFromSave;
+        } else {
+            log.debug("Creating a new entity rating...");
+            return RatingEntity.builder()
+                    .id(RatingId.builder().likerId(liker.getId()).eventId(event.getId()).build())
+                    .liker(liker)
+                    .event(event)
+                    .is_positive(isPositive)
+                    .createdOn(dateTime)
+                    .build();
+        }
     }
 
 }
