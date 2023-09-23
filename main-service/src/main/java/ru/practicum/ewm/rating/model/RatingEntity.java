@@ -44,7 +44,7 @@ public class RatingEntity {
     private EventEntity event;
 
     @Column(name = "is_positive", nullable = false)
-    private Boolean is_positive;
+    private Boolean isPositive;
 
     @Column(name = "created_on", nullable = false)
     private LocalDateTime createdOn;

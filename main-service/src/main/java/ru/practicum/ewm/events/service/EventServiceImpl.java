@@ -760,9 +760,9 @@ public class EventServiceImpl implements EventService {
             RatingEntity ratingFromSave = ratingFromDB.get();
 
             log.debug("Like is already in DB. [isPositiveFromDB={}] [isPositiveFromController={}]",
-                    ratingFromSave.getIs_positive(), isPositive);
+                    ratingFromSave.getIsPositive(), isPositive);
             ratingFromSave.setUpdatedOn(dateTime);
-            ratingFromSave.setIs_positive(isPositive);
+            ratingFromSave.setIsPositive(isPositive);
             log.debug("Performing an update entity rating...");
 
             return ratingFromSave;
@@ -772,7 +772,7 @@ public class EventServiceImpl implements EventService {
                     .id(RatingId.builder().likerId(liker.getId()).eventId(event.getId()).build())
                     .liker(liker)
                     .event(event)
-                    .is_positive(isPositive)
+                    .isPositive(isPositive)
                     .createdOn(dateTime)
                     .build();
         }
