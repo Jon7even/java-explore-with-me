@@ -1197,8 +1197,8 @@
               "    pm.response.to.be.json;\r",
               "});\r",
               "\r",
-              "const source = pm.collectionVariables.get('event1');\r",
-              "const target = pm.response.json();\r",
+              "var source = pm.collectionVariables.get('event1');\r",
+              "var target = pm.response.json();\r",
               "\r",
               "pm.test(\"Событие должно содержать поля: id, title, likes, disLikes\", function () {\r",
               "    pm.expect(target).to.have.property('id');\r",
@@ -1281,8 +1281,8 @@
               "    pm.response.to.be.json;\r",
               "});\r",
               "\r",
-              "const source = pm.collectionVariables.get('event2');\r",
-              "const target = pm.response.json();\r",
+              "var source = pm.collectionVariables.get('event2');\r",
+              "var target = pm.response.json();\r",
               "\r",
               "pm.test(\"Событие должно содержать поля: id, title, likes, disLikes\", function () {\r",
               "    pm.expect(target).to.have.property('id');\r",
@@ -1365,8 +1365,8 @@
               "    pm.response.to.be.json;\r",
               "});\r",
               "\r",
-              "const source = pm.collectionVariables.get('event3');\r",
-              "const target = pm.response.json();\r",
+              "var source = pm.collectionVariables.get('event3');\r",
+              "var target = pm.response.json();\r",
               "\r",
               "pm.test(\"Событие должно содержать поля: id, title, likes, disLikes\", function () {\r",
               "    pm.expect(target).to.have.property('id');\r",
@@ -1449,8 +1449,8 @@
               "    pm.response.to.be.json;\r",
               "});\r",
               "\r",
-              "const source = pm.collectionVariables.get('event4');\r",
-              "const target = pm.response.json();\r",
+              "var source = pm.collectionVariables.get('event4');\r",
+              "var target = pm.response.json();\r",
               "\r",
               "pm.test(\"Событие должно содержать поля: id, title, likes, disLikes\", function () {\r",
               "    pm.expect(target).to.have.property('id');\r",
@@ -1533,8 +1533,8 @@
               "    pm.response.to.be.json;\r",
               "});\r",
               "\r",
-              "const source = pm.collectionVariables.get('event5');\r",
-              "const target = pm.response.json();\r",
+              "var source = pm.collectionVariables.get('event5');\r",
+              "var target = pm.response.json();\r",
               "\r",
               "pm.test(\"Событие должно содержать поля: id, title, likes, disLikes\", function () {\r",
               "    pm.expect(target).to.have.property('id');\r",
@@ -1588,6 +1588,195 @@
               "key": "id",
               "value": "{{eventId5}}",
               "description": "(Required) id события"
+            }
+          ]
+        },
+        "description": "Обратите внимание:\n- событие должно быть опубликовано\n- информация о событии должна включать в себя количество просмотров и количество подтвержденных запросов\n- информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики"
+      },
+      "response": []
+    },
+    {
+      "name": "Получить ТОП событий по лайкам",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+              "    pm.response.to.be.ok;    \r",
+              "    pm.response.to.be.withBody;\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "var target = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Количество событий должно соответствовать алгоритму рейтинга\", function () {\r",
+              "    pm.expect(target.length).to.equal(4);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/events/top?sort=LIKES",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "events",
+            "top"
+          ],
+          "query": [
+            {
+              "key": "sort",
+              "value": "LIKES"
+            }
+          ]
+        },
+        "description": "Обратите внимание:\n- событие должно быть опубликовано\n- информация о событии должна включать в себя количество просмотров и количество подтвержденных запросов\n- информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики"
+      },
+      "response": []
+    },
+    {
+      "name": "Получить ТОП событий по дизлайкам",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+              "    pm.response.to.be.ok;    \r",
+              "    pm.response.to.be.withBody;\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "var target = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Количество событий должно соответствовать алгоритму рейтинга\", function () {\r",
+              "    pm.expect(target.length).to.equal(3);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/events/top?sort=DISLIKES",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "events",
+            "top"
+          ],
+          "query": [
+            {
+              "key": "sort",
+              "value": "DISLIKES"
+            }
+          ]
+        },
+        "description": "Обратите внимание:\n- событие должно быть опубликовано\n- информация о событии должна включать в себя количество просмотров и количество подтвержденных запросов\n- информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики"
+      },
+      "response": []
+    },
+    {
+      "name": "Получить ТОП событий по общему рейтингу",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+              "    pm.response.to.be.ok;    \r",
+              "    pm.response.to.be.withBody;\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "var target = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Количество событий должно соответствовать алгоритму рейтинга\", function () {\r",
+              "    pm.expect(target.length).to.equal(5);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/events/top?sort=TOTAL_RATING",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "events",
+            "top"
+          ],
+          "query": [
+            {
+              "key": "sort",
+              "value": "TOTAL_RATING"
             }
           ]
         },
