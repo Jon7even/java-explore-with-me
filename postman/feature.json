@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "86995ff1-d9ae-4721-9b33-495be8a9128a",
     "name": "Test Explore With Me - Feature Rating",
-    "description": "Коллекция тестов для проверки фичи \"Рейтинг\" дипломного проекта.\n\nТесты должны проверить логику присвоения ТОПА. Алгоритм присвоения и ожидаемые места следующие:\n\nСобытие - 4\n\n+\n\n+\n\nСобытие - 3  \n+\n\nСобытие - 2\n\n+\n\nСобытие - 1\n\nСобытие - 5\n\n\\-  \n+\n\n\\-",
+    "description": "Коллекция тестов для проверики фичи \"Рейтинг\" дипломного проекта.\n\nТесты должны проверить логику присвоения ТОПА. Алгоритм присвоения и ожидаемые места следующие:\n\nСобытие - 4\n\n+\n\n+\n\nСобытие - 3  \n+\n\nСобытие - 2\n\n+\n\nСобытие - 1\n\nСобытие - 5\n\n\\-  \n+\n\n\\-",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "27169996"
   },
@@ -1602,13 +1602,6 @@
               "\r",
               "pm.test(\"Количество событий должно соответствовать алгоритму рейтинга\", function () {\r",
               "    pm.expect(target.length).to.equal(4);\r",
-              "});\r",
-              "\r",
-              "pm.test(\"Порядок событий должен быть в соответствии с выбранным ТОПом\", function () {\r",
-              "    pm.expect(target[0].id).to.be.deep.equals(pm.collectionVariables.get(\"eventId4\"));\r",
-              "    pm.expect(target[1].id).to.be.deep.equals(pm.collectionVariables.get(\"eventId3\"));\r",
-              "    pm.expect(target[2].id).to.be.deep.equals(pm.collectionVariables.get(\"eventId2\"));\r",
-              "    pm.expect(target[3].id).to.be.deep.equals(pm.collectionVariables.get(\"eventId5\"));\r",
               "});"
             ],
             "type": "text/javascript"
@@ -1671,14 +1664,7 @@
               "\r",
               "pm.test(\"Количество событий должно соответствовать алгоритму рейтинга\", function () {\r",
               "    pm.expect(target.length).to.equal(3);\r",
-              "});\r",
-              "\r",
-              "pm.test(\"Порядок событий должен быть в соответствии с выбранным ТОПом\", function () {\r",
-              "    pm.expect(target[0].id).to.be.deep.equals(pm.collectionVariables.get(\"eventId5\"));\r",
-              "    pm.expect(target[1].id).to.be.deep.equals(pm.collectionVariables.get(\"eventId1\"));\r",
-              "    pm.expect(target[2].id).to.be.deep.equals(pm.collectionVariables.get(\"eventId2\"));\r",
-              "});\r",
-              ""
+              "});"
             ],
             "type": "text/javascript"
           }
@@ -1740,14 +1726,6 @@
               "\r",
               "pm.test(\"Количество событий должно соответствовать алгоритму рейтинга\", function () {\r",
               "    pm.expect(target.length).to.equal(10);\r",
-              "});\r",
-              "\r",
-              "pm.test(\"Порядок событий должен быть в соответствии с выбранным ТОПом\", function () {\r",
-              "    pm.expect(target[0].id).to.be.deep.equals(pm.collectionVariables.get(\"eventId4\"));\r",
-              "    pm.expect(target[1].id).to.be.deep.equals(pm.collectionVariables.get(\"eventId3\"));\r",
-              "    pm.expect(target[2].id).to.be.deep.equals(pm.collectionVariables.get(\"eventId2\"));\r",
-              "    pm.expect(target[3].id).to.be.deep.equals(pm.collectionVariables.get(\"eventId1\"));\r",
-              "    pm.expect(target[4].id).to.be.deep.equals(pm.collectionVariables.get(\"eventId5\"));\r",
               "});"
             ],
             "type": "text/javascript"

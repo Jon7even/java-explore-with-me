@@ -78,7 +78,7 @@ public class EventPublicController {
     public ResponseEntity<List<EventShortDto>> getTopBySortAndPages(
             @RequestParam @NotNull RatingSort sort,
             @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-            @Positive @RequestParam(name = "size", defaultValue = "117") Integer size,
+            @Positive @RequestParam(name = "size", defaultValue = "10") Integer size,
             HttpServletRequest request) {
 
         log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
