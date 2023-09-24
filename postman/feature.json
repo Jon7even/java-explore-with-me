@@ -51,12 +51,15 @@
               "        pm.collectionVariables.set(\"event4\", event4);\r",
               "        pm.collectionVariables.set(\"event5\", event5);\r",
               "\r",
-              "        pm.collectionVariables.set(\"eid1\", event1.id)\r",
-              "        pm.collectionVariables.set(\"eid2\", event2.id)\r",
-              "        pm.collectionVariables.set(\"eid3\", event3.id)\r",
-              "        pm.collectionVariables.set(\"eid4\", event4.id)\r",
-              "        pm.collectionVariables.set(\"eid5\", event5.id)\r",
+              "        pm.collectionVariables.set(\"eventId1\", event1.id);\r",
+              "        pm.collectionVariables.set(\"eventId2\", event2.id);\r",
+              "        pm.collectionVariables.set(\"eventId3\", event3.id);\r",
+              "        pm.collectionVariables.set(\"eventId4\", event4.id);\r",
+              "        pm.collectionVariables.set(\"eventId5\", event5.id);\r",
+              "\r",
               "        pm.collectionVariables.set(\"eventNotPubliched\", eventNotPubliched.id)\r",
+              "        pm.collectionVariables.set('uidOwner', userOwnerEvent.id);\r",
+              "        \r",
               "        pm.collectionVariables.set('uid1', userLiker1.id);\r",
               "        pm.collectionVariables.set('uid2', userLiker2.id);\r",
               "        pm.collectionVariables.set('uid3', userLiker3.id);\r",
@@ -68,7 +71,6 @@
               "        pm.collectionVariables.set('uid9', userLiker9.id);\r",
               "        pm.collectionVariables.set('uid10', userLiker10.id);\r",
               "        pm.collectionVariables.set('uid11', userLiker11.id);\r",
-              "        pm.collectionVariables.set('uidOwner', userOwnerEvent.id);\r",
               "\r",
               "    } catch(err) {\r",
               "        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
@@ -135,7 +137,7 @@
             },
             {
               "key": "eventId",
-              "value": "{{eid4}}"
+              "value": "{{eventId4}}"
             }
           ]
         }
@@ -198,7 +200,7 @@
             },
             {
               "key": "eventId",
-              "value": "{{eid4}}"
+              "value": "{{eventId4}}"
             }
           ]
         }
@@ -261,7 +263,7 @@
             },
             {
               "key": "eventId",
-              "value": "99999"
+              "value": "999999"
             }
           ]
         }
@@ -324,7 +326,7 @@
             },
             {
               "key": "eventId",
-              "value": "{{eid4}}"
+              "value": "{{eventId4}}"
             }
           ]
         }
@@ -448,7 +450,7 @@
             },
             {
               "key": "eventId",
-              "value": "{{eid4}}"
+              "value": "{{eventId4}}"
             }
           ]
         }
@@ -509,7 +511,7 @@
             },
             {
               "key": "eventId",
-              "value": "{{eid3}}"
+              "value": "{{eventId3}}"
             }
           ]
         }
@@ -570,7 +572,7 @@
             },
             {
               "key": "eventId",
-              "value": "{{eid2}}"
+              "value": "{{eventId2}}"
             }
           ]
         }
@@ -631,7 +633,7 @@
             },
             {
               "key": "eventId",
-              "value": "{{eid2}}"
+              "value": "{{eventId2}}"
             }
           ]
         }
@@ -692,7 +694,7 @@
             },
             {
               "key": "eventId",
-              "value": "{{eid1}}"
+              "value": "{{eventId1}}"
             }
           ]
         }
@@ -753,7 +755,7 @@
             },
             {
               "key": "eventId",
-              "value": "{{eid5}}"
+              "value": "{{eventId5}}"
             }
           ]
         }
@@ -814,7 +816,7 @@
             },
             {
               "key": "eventId",
-              "value": "{{eid5}}"
+              "value": "{{eventId5}}"
             }
           ]
         }
@@ -875,7 +877,7 @@
             },
             {
               "key": "eventId",
-              "value": "{{eid5}}"
+              "value": "{{eventId5}}"
             }
           ]
         }
@@ -936,7 +938,7 @@
             },
             {
               "key": "eventId",
-              "value": "{{eid5}}"
+              "value": "{{eventId5}}"
             }
           ]
         }
@@ -997,7 +999,7 @@
             },
             {
               "key": "eventId",
-              "value": "{{eid5}}"
+              "value": "{{eventId5}}"
             }
           ]
         }
@@ -1052,7 +1054,7 @@
             },
             {
               "key": "eventId",
-              "value": "{{eid5}}"
+              "value": "{{eventId5}}"
             }
           ]
         }
@@ -1105,11 +1107,11 @@
           "variable": [
             {
               "key": "userId",
-              "value": "9999"
+              "value": "999999"
             },
             {
               "key": "eventId",
-              "value": "{{eid5}}"
+              "value": "{{eventId5}}"
             }
           ]
         }
@@ -1166,7 +1168,7 @@
             },
             {
               "key": "eventId",
-              "value": "99999"
+              "value": "9999999"
             }
           ]
         }
@@ -1209,10 +1211,16 @@
               "    pm.expect(source.title).equal(target.title, 'Название события должно соответствовать названию события с указанным идентификатором');\r",
               "});\r",
               "\r",
-              "pm.test(\"Событие должно соответствовать обработанному алгоритму рейтинга\", function () {\r",
+              "pm.test(\"Поля likes и disLikes являются массивами\", function () {\r",
               "    pm.expect(target.likes).is.an('array');\r",
               "    pm.expect(target.disLikes).is.an('array');\r",
+              "});\r",
+              "\r",
+              "pm.test(\"У события должно быть количество лайков, соответствующее алгоритму проверки\", function () {\r",
               "    pm.expect(target.likes.length).to.equal(0);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"У события должно быть количество длизлайков, соответствующее алгоритму проверки\", function () {\r",
               "    pm.expect(target.disLikes.length).to.equal(1);\r",
               "});"
             ],
@@ -1242,7 +1250,7 @@
           "variable": [
             {
               "key": "id",
-              "value": "{{eid1}}",
+              "value": "{{eventId1}}",
               "description": "(Required) id события"
             }
           ]
@@ -1287,10 +1295,16 @@
               "    pm.expect(source.title).equal(target.title, 'Название события должно соответствовать названию события с указанным идентификатором');\r",
               "});\r",
               "\r",
-              "pm.test(\"Событие должно соответствовать обработанному алгоритму рейтинга\", function () {\r",
+              "pm.test(\"Поля likes и disLikes являются массивами\", function () {\r",
               "    pm.expect(target.likes).is.an('array');\r",
               "    pm.expect(target.disLikes).is.an('array');\r",
+              "});\r",
+              "\r",
+              "pm.test(\"У события должно быть количество лайков, соответствующее алгоритму проверки\", function () {\r",
               "    pm.expect(target.likes.length).to.equal(1);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"У события должно быть количество длизлайков, соответствующее алгоритму проверки\", function () {\r",
               "    pm.expect(target.disLikes.length).to.equal(1);\r",
               "});"
             ],
@@ -1320,7 +1334,7 @@
           "variable": [
             {
               "key": "id",
-              "value": "{{eid2}}",
+              "value": "{{eventId2}}",
               "description": "(Required) id события"
             }
           ]
@@ -1365,10 +1379,16 @@
               "    pm.expect(source.title).equal(target.title, 'Название события должно соответствовать названию события с указанным идентификатором');\r",
               "});\r",
               "\r",
-              "pm.test(\"Событие должно соответствовать обработанному алгоритму рейтинга\", function () {\r",
+              "pm.test(\"Поля likes и disLikes являются массивами\", function () {\r",
               "    pm.expect(target.likes).is.an('array');\r",
               "    pm.expect(target.disLikes).is.an('array');\r",
+              "});\r",
+              "\r",
+              "pm.test(\"У события должно быть количество лайков, соответствующее алгоритму проверки\", function () {\r",
               "    pm.expect(target.likes.length).to.equal(1);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"У события должно быть количество длизлайков, соответствующее алгоритму проверки\", function () {\r",
               "    pm.expect(target.disLikes.length).to.equal(0);\r",
               "});"
             ],
@@ -1398,7 +1418,7 @@
           "variable": [
             {
               "key": "id",
-              "value": "{{eid3}}",
+              "value": "{{eventId3}}",
               "description": "(Required) id события"
             }
           ]
@@ -1443,10 +1463,16 @@
               "    pm.expect(source.title).equal(target.title, 'Название события должно соответствовать названию события с указанным идентификатором');\r",
               "});\r",
               "\r",
-              "pm.test(\"Событие должно соответствовать обработанному алгоритму рейтинга\", function () {\r",
+              "pm.test(\"Поля likes и disLikes являются массивами\", function () {\r",
               "    pm.expect(target.likes).is.an('array');\r",
               "    pm.expect(target.disLikes).is.an('array');\r",
+              "});\r",
+              "\r",
+              "pm.test(\"У события должно быть количество лайков, соответствующее алгоритму проверки\", function () {\r",
               "    pm.expect(target.likes.length).to.equal(2);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"У события должно быть количество длизлайков, соответствующее алгоритму проверки\", function () {\r",
               "    pm.expect(target.disLikes.length).to.equal(0);\r",
               "});"
             ],
@@ -1476,7 +1502,7 @@
           "variable": [
             {
               "key": "id",
-              "value": "{{eid4}}",
+              "value": "{{eventId4}}",
               "description": "(Required) id события"
             }
           ]
@@ -1521,10 +1547,16 @@
               "    pm.expect(source.title).equal(target.title, 'Название события должно соответствовать названию события с указанным идентификатором');\r",
               "});\r",
               "\r",
-              "pm.test(\"Событие должно соответствовать обработанному алгоритму рейтинга\", function () {\r",
+              "pm.test(\"Поля likes и disLikes являются массивами\", function () {\r",
               "    pm.expect(target.likes).is.an('array');\r",
               "    pm.expect(target.disLikes).is.an('array');\r",
+              "});\r",
+              "\r",
+              "pm.test(\"У события должно быть количество лайков, соответствующее алгоритму проверки\", function () {\r",
               "    pm.expect(target.likes.length).to.equal(1);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"У события должно быть количество длизлайков, соответствующее алгоритму проверки\", function () {\r",
               "    pm.expect(target.disLikes.length).to.equal(3);\r",
               "});"
             ],
@@ -1554,7 +1586,7 @@
           "variable": [
             {
               "key": "id",
-              "value": "{{eid5}}",
+              "value": "{{eventId5}}",
               "description": "(Required) id события"
             }
           ]
@@ -1740,11 +1772,6 @@
       "type": "string"
     },
     {
-      "key": "eid1",
-      "value": "",
-      "type": "string"
-    },
-    {
       "key": "uid2",
       "value": "",
       "type": "string"
@@ -1790,22 +1817,7 @@
       "type": "string"
     },
     {
-      "key": "eid2",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "eid3",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "eid4",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "eid5",
+      "key": "uid11",
       "value": "",
       "type": "string"
     },
@@ -1814,21 +1826,7 @@
       "value": ""
     },
     {
-      "key": "uid11",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "uid",
-      "value": "",
-      "type": "string"
-    },
-    {
       "key": "uidOwner",
-      "value": ""
-    },
-    {
-      "key": "eid",
       "value": ""
     },
     {
@@ -1858,6 +1856,31 @@
     },
     {
       "key": "eventNotPubliched",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "eventId1",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "eventId2",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "eventId3",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "eventId4",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "eventId5",
       "value": "",
       "type": "string"
     }
