@@ -14,10 +14,8 @@ import ru.practicum.ewm.events.dto.EventShortDto;
 import ru.practicum.ewm.events.dto.PublicParamsSortDto;
 import ru.practicum.ewm.events.model.EventSort;
 import ru.practicum.ewm.events.service.EventService;
-import ru.practicum.ewm.rating.model.RatingSort;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
