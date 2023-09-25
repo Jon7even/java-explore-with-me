@@ -74,16 +74,4 @@ public class EventPublicController {
         return ResponseEntity.ok().body(eventService.getPublicEventById(id, request));
     }
 
-    @GetMapping("/top")
-    public ResponseEntity<List<EventShortDto>> getTopBySortAndPages(
-            @RequestParam @NotNull RatingSort sort,
-            @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-            @Positive @RequestParam(name = "size", defaultValue = "10") Integer size,
-            HttpServletRequest request) {
-
-        log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
-
-        return ResponseEntity.ok().body(eventService.getTopEventsBySortAndPages(sort, from, size));
-    }
-
 }

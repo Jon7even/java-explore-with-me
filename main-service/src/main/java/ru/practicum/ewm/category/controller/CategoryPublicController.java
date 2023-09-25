@@ -39,7 +39,7 @@ public class CategoryPublicController {
 
     @GetMapping("/{catId}")
     public ResponseEntity<CategoryDto> getById(@PathVariable @Positive Integer catId,
-                                                       HttpServletRequest request) {
+                                               HttpServletRequest request) {
 
         log.debug("On {} {} {}", request.getRequestURL(), IN_CONTROLLER_METHOD, request.getMethod());
 

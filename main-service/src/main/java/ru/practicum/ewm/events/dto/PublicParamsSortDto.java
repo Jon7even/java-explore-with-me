@@ -1,7 +1,11 @@
 package ru.practicum.ewm.events.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import ru.practicum.ewm.events.model.EventSort;
 
 import javax.servlet.http.HttpServletRequest;

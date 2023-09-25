@@ -1,7 +1,6 @@
 package ru.practicum.ewm.events.service;
 
 import ru.practicum.ewm.events.dto.*;
-import ru.practicum.ewm.rating.model.RatingSort;
 import ru.practicum.ewm.requests.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.requests.dto.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.requests.dto.ParticipationRequestDto;
@@ -30,10 +29,4 @@ public interface EventService {
 
     EventRequestStatusUpdateResult confirmRequestByInitiator(Long userId, Long eventId,
                                                              EventRequestStatusUpdateRequest updateRequest);
-
-    void addLikeByEventId(Long userId, Long eventId, Boolean isPositive);
-
-    void removeLikeByEventId(Long userId, Long eventId);
-
-    List<EventShortDto> getTopEventsBySortAndPages(RatingSort sort, Integer from, Integer size);
 }

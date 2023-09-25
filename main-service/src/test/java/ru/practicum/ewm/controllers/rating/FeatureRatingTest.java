@@ -2,9 +2,11 @@ package ru.practicum.ewm.controllers.rating;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.ewm.events.dto.EventFullDto;
 import ru.practicum.ewm.events.dto.UpdateEventAdminRequest;
 import ru.practicum.ewm.rating.model.RatingSort;
+import ru.practicum.ewm.rating.service.RatingService;
 import ru.practicum.ewm.setup.GenericControllerEvents;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -21,6 +23,9 @@ import static ru.practicum.ewm.constants.NamesExceptions.EVENT_NOT_PUBLISHED;
 import static ru.practicum.ewm.events.model.EventState.PUBLISH_EVENT;
 
 public class FeatureRatingTest extends GenericControllerEvents {
+    @Autowired
+    RatingService ratingService;
+
     @Test
     @DisplayName("Лайк/дизлайк должен поставиться без ошибок [addLikeById]")
     void shouldAddLikeAndDislike_thenStatus204() throws Exception {
@@ -227,19 +232,19 @@ public class FeatureRatingTest extends GenericControllerEvents {
         eventService.confirmEvent(event4.getId(), eventDTOConfirm);
         eventService.confirmEvent(event5.getId(), eventDTOConfirm);
 
-        eventService.addLikeByEventId(2L, event1.getId(), false);
+        ratingService.addLikeByEventId(2L, event1.getId(), false);
 
-        eventService.addLikeByEventId(2L, event2.getId(), true);
-        eventService.addLikeByEventId(3L, event2.getId(), true);
-        eventService.addLikeByEventId(4L, event2.getId(), true);
-        eventService.addLikeByEventId(5L, event2.getId(), true);
-        eventService.addLikeByEventId(6L, event2.getId(), true);
+        ratingService.addLikeByEventId(2L, event2.getId(), true);
+        ratingService.addLikeByEventId(3L, event2.getId(), true);
+        ratingService.addLikeByEventId(4L, event2.getId(), true);
+        ratingService.addLikeByEventId(5L, event2.getId(), true);
+        ratingService.addLikeByEventId(6L, event2.getId(), true);
 
-        eventService.addLikeByEventId(2L, event3.getId(), true);
-        eventService.addLikeByEventId(3L, event3.getId(), true);
-        eventService.addLikeByEventId(4L, event3.getId(), true);
+        ratingService.addLikeByEventId(2L, event3.getId(), true);
+        ratingService.addLikeByEventId(3L, event3.getId(), true);
+        ratingService.addLikeByEventId(4L, event3.getId(), true);
 
-        eventService.addLikeByEventId(5L, event4.getId(), true);
+        ratingService.addLikeByEventId(5L, event4.getId(), true);
 
         mockMvc.perform(get(EVENT_PUBLIC + "/top")
                         .param("sort", RatingSort.LIKES.toString()))
@@ -252,19 +257,19 @@ public class FeatureRatingTest extends GenericControllerEvents {
                 .andExpect(jsonPath("$[2].id").value(event4.getId()))
                 .andExpect(jsonPath("$[2].annotation").value(event4.getAnnotation()));
 
-        eventService.addLikeByEventId(2L, event1.getId(), true);
+        ratingService.addLikeByEventId(2L, event1.getId(), true);
 
-        eventService.addLikeByEventId(2L, event2.getId(), false);
-        eventService.addLikeByEventId(3L, event2.getId(), false);
-        eventService.addLikeByEventId(4L, event2.getId(), false);
-        eventService.addLikeByEventId(5L, event2.getId(), false);
-        eventService.addLikeByEventId(6L, event2.getId(), false);
+        ratingService.addLikeByEventId(2L, event2.getId(), false);
+        ratingService.addLikeByEventId(3L, event2.getId(), false);
+        ratingService.addLikeByEventId(4L, event2.getId(), false);
+        ratingService.addLikeByEventId(5L, event2.getId(), false);
+        ratingService.addLikeByEventId(6L, event2.getId(), false);
 
-        eventService.addLikeByEventId(2L, event3.getId(), false);
-        eventService.addLikeByEventId(3L, event3.getId(), false);
-        eventService.addLikeByEventId(4L, event3.getId(), false);
+        ratingService.addLikeByEventId(2L, event3.getId(), false);
+        ratingService.addLikeByEventId(3L, event3.getId(), false);
+        ratingService.addLikeByEventId(4L, event3.getId(), false);
 
-        eventService.addLikeByEventId(5L, event4.getId(), false);
+        ratingService.addLikeByEventId(5L, event4.getId(), false);
 
         mockMvc.perform(get(EVENT_PUBLIC + "/top")
                         .param("sort", RatingSort.DISLIKES.toString()))
@@ -280,35 +285,35 @@ public class FeatureRatingTest extends GenericControllerEvents {
                 .andExpect(jsonPath("$[2].annotation").value(event4.getAnnotation()))
                 .andExpect(jsonPath("$[2].likes").value(hasSize(0)));
 
-        eventService.addLikeByEventId(2L, event1.getId(), true);
-        eventService.addLikeByEventId(3L, event1.getId(), true);
-        eventService.addLikeByEventId(4L, event1.getId(), true);
-        eventService.addLikeByEventId(5L, event1.getId(), true);
-        eventService.addLikeByEventId(6L, event1.getId(), true);
+        ratingService.addLikeByEventId(2L, event1.getId(), true);
+        ratingService.addLikeByEventId(3L, event1.getId(), true);
+        ratingService.addLikeByEventId(4L, event1.getId(), true);
+        ratingService.addLikeByEventId(5L, event1.getId(), true);
+        ratingService.addLikeByEventId(6L, event1.getId(), true);
 
-        eventService.addLikeByEventId(2L, event5.getId(), false);
-        eventService.addLikeByEventId(3L, event5.getId(), true);
-        eventService.addLikeByEventId(4L, event5.getId(), true);
-        eventService.addLikeByEventId(5L, event5.getId(), true);
-        eventService.addLikeByEventId(6L, event5.getId(), true);
+        ratingService.addLikeByEventId(2L, event5.getId(), false);
+        ratingService.addLikeByEventId(3L, event5.getId(), true);
+        ratingService.addLikeByEventId(4L, event5.getId(), true);
+        ratingService.addLikeByEventId(5L, event5.getId(), true);
+        ratingService.addLikeByEventId(6L, event5.getId(), true);
 
-        eventService.addLikeByEventId(2L, event4.getId(), false);
-        eventService.addLikeByEventId(3L, event4.getId(), false);
-        eventService.addLikeByEventId(4L, event4.getId(), false);
-        eventService.addLikeByEventId(5L, event4.getId(), true);
-        eventService.addLikeByEventId(6L, event4.getId(), true);
+        ratingService.addLikeByEventId(2L, event4.getId(), false);
+        ratingService.addLikeByEventId(3L, event4.getId(), false);
+        ratingService.addLikeByEventId(4L, event4.getId(), false);
+        ratingService.addLikeByEventId(5L, event4.getId(), true);
+        ratingService.addLikeByEventId(6L, event4.getId(), true);
 
-        eventService.addLikeByEventId(2L, event3.getId(), false);
-        eventService.addLikeByEventId(3L, event3.getId(), false);
-        eventService.addLikeByEventId(4L, event3.getId(), false);
-        eventService.addLikeByEventId(5L, event3.getId(), false);
-        eventService.addLikeByEventId(6L, event3.getId(), true);
+        ratingService.addLikeByEventId(2L, event3.getId(), false);
+        ratingService.addLikeByEventId(3L, event3.getId(), false);
+        ratingService.addLikeByEventId(4L, event3.getId(), false);
+        ratingService.addLikeByEventId(5L, event3.getId(), false);
+        ratingService.addLikeByEventId(6L, event3.getId(), true);
 
-        eventService.addLikeByEventId(2L, event2.getId(), false);
-        eventService.addLikeByEventId(3L, event2.getId(), false);
-        eventService.addLikeByEventId(4L, event2.getId(), false);
-        eventService.addLikeByEventId(5L, event2.getId(), false);
-        eventService.addLikeByEventId(6L, event2.getId(), false);
+        ratingService.addLikeByEventId(2L, event2.getId(), false);
+        ratingService.addLikeByEventId(3L, event2.getId(), false);
+        ratingService.addLikeByEventId(4L, event2.getId(), false);
+        ratingService.addLikeByEventId(5L, event2.getId(), false);
+        ratingService.addLikeByEventId(6L, event2.getId(), false);
 
         mockMvc.perform(get(EVENT_PUBLIC + "/top")
                         .param("sort", RatingSort.TOTAL_RATING.toString()))

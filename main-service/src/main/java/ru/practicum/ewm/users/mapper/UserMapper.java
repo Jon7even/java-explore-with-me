@@ -32,5 +32,4 @@ public interface UserMapper {
     @Mapping(source = "userEntity.name", target = "name")
     @Mapping(source = "userEntity.email", target = "email")
     List<UserDto> toDTOResponseFromEntityList(List<UserEntity> listUsers);
-
 }
