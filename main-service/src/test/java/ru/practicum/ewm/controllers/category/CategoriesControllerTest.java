@@ -17,7 +17,10 @@ import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.practicum.ewm.constants.EndpointsPaths.CATEGORY_ADMIN;
@@ -41,7 +44,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
     }
 
     @Test
-    @DisplayName("Новая категория должна создаться с релевантными полями [createCategory]")
+    @DisplayName("Новая категория должна создаться с релевантными полями [create]")
     void shouldCreateCategory_thenStatus201() throws Exception {
         mockMvc.perform(post(CATEGORY_ADMIN)
                         .content(objectMapper.writeValueAsString(firstNewCategoryDto))
@@ -52,7 +55,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
     }
 
     @Test
-    @DisplayName("Новая категория не должна создаться [createCategory]")
+    @DisplayName("Новая категория не должна создаться [create]")
     void shouldNotCreateUser_thenStatus400And409() throws Exception {
         thirdNewCategoryDto.setName("testtesttesttesttesttesttesttesttesttesttesttesttest");
         mockMvc.perform(post(CATEGORY_ADMIN)
@@ -88,7 +91,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
     }
 
     @Test
-    @DisplayName("Категория должна удалиться по [ID] [removeCategoryById]")
+    @DisplayName("Категория должна удалиться по [ID] [removeById]")
     void shouldDeleteCategoryById_thenStatus204And404And409() throws Exception {
         categoryService.createCategory(firstNewCategoryDto);
         Integer idFirstCategory = categoryService.getCategoryById(firstIdInteger).getId();
@@ -132,7 +135,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
     }
 
     @Test
-    @DisplayName("Категория должна обновить имя [updateCategoryById]")
+    @DisplayName("Категория должна обновить имя [updateById]")
     void shouldUpdateCategory_thenStatus200() throws Exception {
         categoryService.createCategory(firstNewCategoryDto);
 
@@ -155,7 +158,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
     }
 
     @Test
-    @DisplayName("Получить все категории [getCategoriesByPage]")
+    @DisplayName("Получить все категории [getByPage]")
     void shouldGetAllCategories_thenStatus200() throws Exception {
         CategoryDto category1 = categoryService.createCategory(firstNewCategoryDto);
         CategoryDto category2 = categoryService.createCategory(secondNewCategoryDto);
@@ -179,7 +182,7 @@ public class CategoriesControllerTest extends GenericControllerTest {
     }
 
     @Test
-    @DisplayName("Поиск категории по [ID] [getCategoryById]")
+    @DisplayName("Поиск категории по [ID] [getById]")
     void shouldGetCategoryById_thenStatus200AndStatus404() throws Exception {
         categoryService.createCategory(firstNewCategoryDto);
 

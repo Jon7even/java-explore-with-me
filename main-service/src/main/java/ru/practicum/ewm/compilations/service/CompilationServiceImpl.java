@@ -18,6 +18,7 @@ import ru.practicum.ewm.events.repository.EventRepository;
 import ru.practicum.ewm.exception.EntityNotDeletedException;
 import ru.practicum.ewm.exception.EntityNotFoundException;
 import ru.practicum.ewm.exception.IntegrityConstraintException;
+import ru.practicum.ewm.rating.mapper.RatingMapper;
 import ru.practicum.ewm.users.mapper.UserMapper;
 import ru.practicum.ewm.utils.ConverterPage;
 
@@ -68,7 +69,9 @@ public class CompilationServiceImpl implements CompilationService {
                 createdCompilation.getEvents().stream()
                         .map((eventEntity -> EventMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity,
                                 CategoryMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getCategory()),
-                                UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator())
+                                UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator()),
+                                RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getLikes()),
+                                RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getDisLikes())
                         )))
                         .collect(Collectors.toList()));
     }
@@ -129,7 +132,9 @@ public class CompilationServiceImpl implements CompilationService {
                     updatedCompilation.getEvents().stream()
                             .map((eventEntity -> EventMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity,
                                     CategoryMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getCategory()),
-                                    UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator())
+                                    UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator()),
+                                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getLikes()),
+                                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getDisLikes())
                             )))
                             .collect(Collectors.toList()));
         } else {
@@ -157,7 +162,9 @@ public class CompilationServiceImpl implements CompilationService {
                         compilationEntity.getEvents().stream()
                                 .map((eventEntity -> EventMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity,
                                         CategoryMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getCategory()),
-                                        UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator())
+                                        UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator()),
+                                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getLikes()),
+                                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getDisLikes())
                                 )))
                                 .collect(Collectors.toList()))
                 )
@@ -176,7 +183,9 @@ public class CompilationServiceImpl implements CompilationService {
                     compilation.getEvents().stream()
                             .map((eventEntity -> EventMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity,
                                     CategoryMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getCategory()),
-                                    UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator())
+                                    UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator()),
+                                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getLikes()),
+                                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getDisLikes())
                             )))
                             .collect(Collectors.toList()));
         } else {

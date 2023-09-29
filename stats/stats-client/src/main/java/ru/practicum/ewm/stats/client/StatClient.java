@@ -43,7 +43,7 @@ public class StatClient extends BaseClient {
             Map<String, Object> parameters = Map.of(
                     "start", requestStatListTO.getStart().format(DEFAULT_TIME_FORMAT),
                     "end", requestStatListTO.getEnd().format(DEFAULT_TIME_FORMAT),
-                    "uris", String.join(",",requestStatListTO.getUris()),
+                    "uris", String.join(",", requestStatListTO.getUris()),
                     "unique", requestStatListTO.getUnique()
             );
             return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);

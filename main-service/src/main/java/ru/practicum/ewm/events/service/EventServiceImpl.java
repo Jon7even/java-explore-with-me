@@ -9,6 +9,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.ewm.events.model.*;
+import ru.practicum.ewm.rating.mapper.RatingMapper;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.category.mapper.CategoryMapper;
 import ru.practicum.ewm.category.model.CategoryEntity;
@@ -16,10 +18,6 @@ import ru.practicum.ewm.category.repository.CategoryRepository;
 import ru.practicum.ewm.events.dto.*;
 import ru.practicum.ewm.events.mapper.EventMapper;
 import ru.practicum.ewm.events.mapper.LocationMapper;
-import ru.practicum.ewm.events.model.EventEntity;
-import ru.practicum.ewm.events.model.EventSort;
-import ru.practicum.ewm.events.model.EventState;
-import ru.practicum.ewm.events.model.LocationEntity;
 import ru.practicum.ewm.events.repository.EventRepository;
 import ru.practicum.ewm.events.repository.LocationRepository;
 import ru.practicum.ewm.events.utils.ValidatorDefaultFields;
@@ -84,7 +82,9 @@ public class EventServiceImpl implements EventService {
         return listEvents.stream()
                 .map((eventEntity -> EventMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity,
                         CategoryMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getCategory()),
-                        UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator())
+                        UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator()),
+                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getLikes()),
+                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getDisLikes())
                 )))
                 .collect(Collectors.toList());
     }
@@ -112,7 +112,9 @@ public class EventServiceImpl implements EventService {
         Location location = LocationMapper.INSTANCE.toDTOResponseFromEntity(createdEvent.getLocation());
 
         log.debug("New event has returned [event={}] {}", event, SERVICE_FROM_DB);
-        return EventMapper.INSTANCE.toDTOFullResponseFromEntity(createdEvent, categoryDto, userShortDto, location);
+        return EventMapper.INSTANCE.toDTOFullResponseFromCreatedEntity(
+                createdEvent, categoryDto, userShortDto, location
+        );
     }
 
     @Override
@@ -129,7 +131,9 @@ public class EventServiceImpl implements EventService {
             return EventMapper.INSTANCE.toDTOFullResponseFromEntity(event,
                     CategoryMapper.INSTANCE.toDTOResponseFromEntity(event.getCategory()),
                     UserMapper.INSTANCE.toDTOShortResponseFromEntity(event.getInitiator()),
-                    LocationMapper.INSTANCE.toDTOResponseFromEntity(event.getLocation()));
+                    LocationMapper.INSTANCE.toDTOResponseFromEntity(event.getLocation()),
+                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(event.getLikes()),
+                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(event.getDisLikes()));
         } else {
             log.warn("Event by [eventId={}] was not found", eventId);
             throw new EntityNotFoundException(String.format("Event with id=%d was not found", eventId));
@@ -161,7 +165,10 @@ public class EventServiceImpl implements EventService {
             return EventMapper.INSTANCE.toDTOFullResponseFromEntity(updatedEvent,
                     CategoryMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getCategory()),
                     UserMapper.INSTANCE.toDTOShortResponseFromEntity(updatedEvent.getInitiator()),
-                    LocationMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getLocation()));
+                    LocationMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getLocation()),
+                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(updatedEvent.getLikes()),
+                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(updatedEvent.getDisLikes()));
+
         } else {
             log.warn("Event by [eventId={}] was not found", eventId);
             throw new EntityNotFoundException(String.format("Event with id=%d was not found", eventId));
@@ -202,8 +209,10 @@ public class EventServiceImpl implements EventService {
                 .map((eventEntity -> EventMapper.INSTANCE.toDTOFullResponseFromEntity(eventEntity,
                         CategoryMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getCategory()),
                         UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator()),
-                        LocationMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getLocation()))
-                ))
+                        LocationMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getLocation()),
+                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getLikes()),
+                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getDisLikes())
+                )))
                 .collect(Collectors.toList());
     }
 
@@ -214,36 +223,32 @@ public class EventServiceImpl implements EventService {
                 SERVICE_FROM_CONTROLLER, updateEventAdminRequest);
         ValidatorDefaultFields.checkEventDateForAdmin(updateEventAdminRequest.getEventDate());
 
-        Optional<EventEntity> foundEventEntity = eventRepository.findById(eventId);
+        EventEntity eventFromDb = findEventEntityById(eventId);
 
-        if (foundEventEntity.isPresent()) {
-            EventEntity entityFromDb = foundEventEntity.get();
-            log.debug("Found [event={}] {}", entityFromDb, SERVICE_FROM_DB);
+        log.debug("Found [event={}] {}", eventFromDb, SERVICE_FROM_DB);
 
-            checkEventStateForConfirm(entityFromDb.getState(), updateEventAdminRequest.getStateAction());
-            setValidFieldsForConfirm(entityFromDb, updateEventAdminRequest);
+        checkEventStateForConfirm(eventFromDb.getState(), updateEventAdminRequest.getStateAction());
+        setValidFieldsForConfirm(eventFromDb, updateEventAdminRequest);
 
-            LocalDateTime now = null;
+        LocalDateTime now = null;
 
-            if (updateEventAdminRequest.getStateAction() != null) {
-                if (entityFromDb.getState().equals(PUBLISHED)) {
-                    now = LocalDateTime.now();
-                }
+        if (updateEventAdminRequest.getStateAction() != null) {
+            if (eventFromDb.getState().equals(PUBLISHED)) {
+                now = LocalDateTime.now();
             }
-            EventMapper.INSTANCE.updateEntityFromDTO(updateEventAdminRequest, entityFromDb, now);
-
-            log.debug("Updated [updatedEvent={}] {} by admin", entityFromDb, SERVICE_IN_DB);
-            EventEntity updatedEvent = eventRepository.save(entityFromDb);
-
-            log.debug("Updated Event has returned [event={}] {}", updatedEvent, SERVICE_FROM_DB);
-            return EventMapper.INSTANCE.toDTOFullResponseFromEntity(updatedEvent,
-                    CategoryMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getCategory()),
-                    UserMapper.INSTANCE.toDTOShortResponseFromEntity(updatedEvent.getInitiator()),
-                    LocationMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getLocation()));
-        } else {
-            log.warn("Event by [eventId={}] was not found", eventId);
-            throw new EntityNotFoundException(String.format("Event with id=%d was not found", eventId));
         }
+        EventMapper.INSTANCE.updateEntityFromDTO(updateEventAdminRequest, eventFromDb, now);
+
+        log.debug("Updated [updatedEvent={}] {} by admin", eventFromDb, SERVICE_IN_DB);
+        EventEntity updatedEvent = eventRepository.save(eventFromDb);
+
+        log.debug("Updated Event has returned [event={}] {}", updatedEvent, SERVICE_FROM_DB);
+        return EventMapper.INSTANCE.toDTOFullResponseFromEntity(updatedEvent,
+                CategoryMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getCategory()),
+                UserMapper.INSTANCE.toDTOShortResponseFromEntity(updatedEvent.getInitiator()),
+                LocationMapper.INSTANCE.toDTOResponseFromEntity(updatedEvent.getLocation()),
+                RatingMapper.INSTANCE.toListDTOResponseFromListEntity(updatedEvent.getLikes()),
+                RatingMapper.INSTANCE.toListDTOResponseFromListEntity(updatedEvent.getDisLikes()));
     }
 
     @Override
@@ -290,7 +295,9 @@ public class EventServiceImpl implements EventService {
         return listEvents.stream()
                 .map((eventEntity -> EventMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity,
                         CategoryMapper.INSTANCE.toDTOResponseFromEntity(eventEntity.getCategory()),
-                        UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator())
+                        UserMapper.INSTANCE.toDTOShortResponseFromEntity(eventEntity.getInitiator()),
+                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getLikes()),
+                        RatingMapper.INSTANCE.toListDTOResponseFromListEntity(eventEntity.getDisLikes())
                 )))
                 .collect(Collectors.toList());
     }
@@ -313,7 +320,9 @@ public class EventServiceImpl implements EventService {
             return EventMapper.INSTANCE.toDTOFullResponseFromEntity(event,
                     CategoryMapper.INSTANCE.toDTOResponseFromEntity(event.getCategory()),
                     UserMapper.INSTANCE.toDTOShortResponseFromEntity(event.getInitiator()),
-                    LocationMapper.INSTANCE.toDTOResponseFromEntity(event.getLocation()));
+                    LocationMapper.INSTANCE.toDTOResponseFromEntity(event.getLocation()),
+                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(event.getLikes()),
+                    RatingMapper.INSTANCE.toListDTOResponseFromListEntity(event.getDisLikes()));
         } else {
             log.warn("Event by [eventId={}] with state Published was not found", eventId);
             throw new EntityNotFoundException(String.format("Event with id=%d was not found", eventId));
@@ -427,32 +436,6 @@ public class EventServiceImpl implements EventService {
 
         log.debug("Location has returned [location={}] {}", updatedLocation, SERVICE_FROM_DB);
         return updatedLocation;
-    }
-
-    private CategoryEntity findCategoryEntityById(Integer idCategory) {
-        log.debug("Get category entity for checking by [idCategory={}] {}", idCategory, SERVICE_IN_DB);
-        Optional<CategoryEntity> foundCheckCategory = categoryRepository.findById(idCategory);
-
-        if (foundCheckCategory.isPresent()) {
-            log.debug("Check was successful found [category={}] {}", foundCheckCategory.get(), SERVICE_FROM_DB);
-            return foundCheckCategory.get();
-        } else {
-            log.warn("Category by [id={}] was not found", idCategory);
-            throw new EntityNotFoundException(String.format("Category with id=%d was not found", idCategory));
-        }
-    }
-
-    private UserEntity findUserEntityById(Long userId) {
-        log.debug("Get user entity for checking by [userId={}] {}", userId, SERVICE_IN_DB);
-        Optional<UserEntity> foundCheckUser = userRepository.findById(userId);
-
-        if (foundCheckUser.isPresent()) {
-            log.debug("Check was successful found [user={}] {}", foundCheckUser.get(), SERVICE_FROM_DB);
-            return foundCheckUser.get();
-        } else {
-            log.warn("User by [userId={}] was not found", userId);
-            throw new EntityNotFoundException(String.format("User with id=%d was not found", userId));
-        }
     }
 
     private NewEventDto validateDefaultFields(NewEventDto newEventDto) {
@@ -572,6 +555,10 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    private Boolean checkStatusInListRequests(List<RequestEntity> requestEntities, RequestStatus status) {
+        return requestEntities.stream().anyMatch(request -> request.getStatus().equals(status));
+    }
+
     private void saveHits(EventEntity event) {
         log.debug("Set [eventId={}] [hits={}] {}", event.getId(), event.getViews(), SERVICE_IN_DB);
         eventRepository.save(event);
@@ -637,6 +624,32 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    private CategoryEntity findCategoryEntityById(Integer idCategory) {
+        log.debug("Get category entity for checking by [idCategory={}] {}", idCategory, SERVICE_IN_DB);
+        Optional<CategoryEntity> foundCheckCategory = categoryRepository.findById(idCategory);
+
+        if (foundCheckCategory.isPresent()) {
+            log.debug("Check was successful found [category={}] {}", foundCheckCategory.get(), SERVICE_FROM_DB);
+            return foundCheckCategory.get();
+        } else {
+            log.warn("Category by [id={}] was not found", idCategory);
+            throw new EntityNotFoundException(String.format("Category with id=%d was not found", idCategory));
+        }
+    }
+
+    private UserEntity findUserEntityById(Long userId) {
+        log.debug("Get user entity for checking by [userId={}] {}", userId, SERVICE_IN_DB);
+        Optional<UserEntity> foundCheckUser = userRepository.findById(userId);
+
+        if (foundCheckUser.isPresent()) {
+            log.debug("Check was successful found [user={}] {}", foundCheckUser.get(), SERVICE_FROM_DB);
+            return foundCheckUser.get();
+        } else {
+            log.warn("User by [userId={}] was not found", userId);
+            throw new EntityNotFoundException(String.format("User with id=%d was not found", userId));
+        }
+    }
+
     private EventEntity findEventEntityById(Long eventId) {
         log.debug("Get event entity for checking by [eventId={}] {}", eventId, SERVICE_IN_DB);
         Optional<EventEntity> foundCheckEvent = eventRepository.findById(eventId);
@@ -648,10 +661,6 @@ public class EventServiceImpl implements EventService {
             log.warn("Event by [eventId={}] was not found", foundCheckEvent);
             throw new EntityNotFoundException(String.format("Event with id=%d was not found", eventId));
         }
-    }
-
-    private Boolean checkStatusInListRequests(List<RequestEntity> requestEntities, RequestStatus status) {
-        return requestEntities.stream().anyMatch(request -> request.getStatus().equals(status));
     }
 
 }

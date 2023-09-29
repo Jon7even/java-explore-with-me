@@ -17,7 +17,6 @@ import java.util.Objects;
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
-
     @ExceptionHandler(ApplicationException.class)
     protected ResponseEntity<Object> handleApplicationException(ApplicationException exception) {
         HttpStatus responseStatus = exception.getHttpStatus();

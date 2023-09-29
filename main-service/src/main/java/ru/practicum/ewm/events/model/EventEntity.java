@@ -6,7 +6,9 @@ import lombok.ToString;
 import lombok.Setter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 import ru.practicum.ewm.category.model.CategoryEntity;
+import ru.practicum.ewm.rating.model.RatingEntity;
 import ru.practicum.ewm.users.model.UserEntity;
 
 import javax.persistence.Id;
@@ -17,10 +19,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.FetchType;
+import javax.persistence.CascadeType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
+import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import static ru.practicum.ewm.config.CommonConfig.*;
 
@@ -59,7 +65,7 @@ public class EventEntity {
     @Column(name = "event_date", nullable = false)
     private LocalDateTime eventDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "initiator_id", nullable = false)
     @ToString.Exclude
     private UserEntity initiator;
@@ -94,6 +100,14 @@ public class EventEntity {
     @Builder.Default
     @Column(name = "views", nullable = false)
     private Integer views = 0;
+
+    @OneToMany(mappedBy = "event", fetch = FetchType.EAGER)
+    @Where(clause = "is_positive = true")
+    private Set<RatingEntity> likes = new HashSet<>();
+
+    @OneToMany(mappedBy = "event", fetch = FetchType.EAGER)
+    @Where(clause = "is_positive = false")
+    private Set<RatingEntity> disLikes = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

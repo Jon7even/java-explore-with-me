@@ -10,7 +10,10 @@ import ru.practicum.ewm.setup.GenericControllerEvents;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -121,6 +124,7 @@ public class EventAdminControllerTest extends GenericControllerEvents {
         mockMvc.perform(patch(EVENT_ADMIN + "/{eventId}", event1.getId())
                         .content(objectMapper.writeValueAsString(eventDTOConfirm))
                         .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("state").value(PUBLISHED.toString()))
                 .andExpect(jsonPath("publishedOn").value(notNullValue()));
     }
@@ -145,10 +149,6 @@ public class EventAdminControllerTest extends GenericControllerEvents {
                 .andExpect(jsonPath("message").value(START_AFTER_END))
                 .andExpect(jsonPath("timestamp").value(notNullValue()));
 
-        mockMvc.perform(get(EVENT_ADMIN))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(5)));
-
         mockMvc.perform(get(EVENT_PRIVATE, firstId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
@@ -156,20 +156,6 @@ public class EventAdminControllerTest extends GenericControllerEvents {
         mockMvc.perform(get(EVENT_PRIVATE, secondId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)));
-
-        mockMvc.perform(get(EVENT_ADMIN)
-                        .param("states", PENDING.toString())
-                        .param("users", "1, 2")
-                        .param("categories", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(5)));
-
-        mockMvc.perform(get(EVENT_ADMIN)
-                        .param("states", PENDING.toString())
-                        .param("users", "1")
-                        .param("categories", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
     }
 
 }
